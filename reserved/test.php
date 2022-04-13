@@ -1,9 +1,9 @@
 <?php
 
+include 'methods.php';
 include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
-include 'variables.php';
 
-echo db_cred['name'];
+TextFormatter::prettyPrint(db_cred['name']);
 
 class CurlHelper {
     public static function perform_http_request($method, $url, $data = false) {
@@ -15,6 +15,11 @@ class CurlHelper {
     
                 if ($data)
                     curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                    TextFormatter::prettyPrint('POST WITH PARAMS');
+                    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+                        'Authorization: ',
+                        'Content-Type: application/json')
+                    );
                 break;
             case 'PUT':
                 curl_setopt($curl, CURLOPT_PUT, 1);
@@ -26,6 +31,7 @@ class CurlHelper {
     
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
     
         $result = curl_exec($curl);
     
@@ -36,27 +42,27 @@ class CurlHelper {
     
 }
 
-$action = 'GET';
-$url = 'https://api.crypto.com/v2/public/get-ticker?instrument_name=BTC_USDT';
-echo $url;
-$parameters = array('param' => 'value');
-$result = CurlHelper::perform_http_request($action, $url);
-echo '<br>';echo '<br>';
-echo print_r($result);
-echo '<br>'; echo '<br>';
-$mynewarray = json_decode($result, true);
-echo print_r($mynewarray);
-echo '<br>';echo '<br>';
-print_r($mynewarray['result']['data']['k']);
+$test = new getMethods;
+$test2 = $test->getCurrencyNetwork();
+TextFormatter::prettyPrint($test2);
 
+$action = $test2->type;
+$url = api_url.$test2->visibility.$test2->method;
+$parameters = str_replace('[]', '{}', str_replace('\\', '', json_encode((array) $test2->bodyRequest)));
+$result = CurlHelper::perform_http_request($action, $url, $parameters);
+TextFormatter::prettyPrint($action);
+TextFormatter::prettyPrint($url);
+TextFormatter::prettyPrint($parameters);
+
+TextFormatter::prettyPrint(json_decode($result, true));
+TextFormatter::prettyPrint($mynewarray['result']['data']['k']);
 
 $conn = new mysqli(db_cred['name'], db_cred['username'], db_cred['password'], db_cred['name']);
 
 if ($conn->connect_error) {
   die('Connection failed: ' . $conn->connect_error);
 }
-echo '<br>';echo '<br>';
-echo 'Connected successfully';
+TextFormatter::prettyPrint('Connected successfully');
 
 $query = 'SELECT ID FROM USERS';
 $result = mysqli_query($conn, $query);
@@ -71,9 +77,9 @@ if(empty($result)) {
     )';
         
         if ($conn->query($sql) === TRUE) {
-          echo 'Table MyGuests created successfully';
+            TextFormatter::prettyPrint('Table MyGuests created successfully');
         } else {
-          echo 'Error creating table: ' . $conn->error;
+            TextFormatter::prettyPrint('Error creating table: '.$conn->error);
         }
         
     $conn->close();

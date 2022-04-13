@@ -1,7 +1,8 @@
 <?php
 
-include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
+include 'utils/formatter.php';
 include 'variables/methods.php';
+include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
 
     class Method {
         public $visibility;
@@ -11,28 +12,24 @@ include 'variables/methods.php';
 
         public function __construct() {}
 
-        public function getMethod() {
-            return $this->method;
-        }
-
         function setMethodGET($visibility, $method, $params) {
             $this->visibility   = $visibility;
-            $this->type         = 'GET';
+            $this->type         = GET;
             $paramsString       = $params->getParams();
             if(strlen($paramsString) > 0) {
                 $this->method   = $method.'?'.$paramsString;
             } else {
-                $this->method = $method;
+                $this->method   = $method;
             }
         }
 
         function setMethodPOST($visibility, $method, $bodyRequest) {
             $this->visibility   = $visibility;
             $this->method       = $method;
-            $this->type         = 'POST';
+            $this->type         = POST;
             $this->bodyRequest  = $bodyRequest;
     
-            if($this->visibility  == 'private') {
+            if($this->visibility  == _private) {
                 $this->bodyRequest->setApiKey(api_key);
                 $this->bodyRequest->setSig(
                     hash_hmac(
@@ -47,6 +44,10 @@ include 'variables/methods.php';
 
         function getMethodString() {
             return $this->bodyRequest->getToEncrypt();
+        }
+
+        function getArrayRequest() {
+            return json_encode();
         }
     }
 
@@ -91,7 +92,7 @@ include 'variables/methods.php';
 
             while($element = current($this->params)) {
                 $key            = key($this->params);
-                $stringParams   = $stringParams.'&'.$key."=".$this->params[$key];
+                $stringParams   = $stringParams.'&'.$key.'='.$this->params[$key];
                 next($this->params);
             }
 
@@ -99,7 +100,9 @@ include 'variables/methods.php';
         }
 
         function getToEncrypt() {
-            return strval($this->method.$this->id.$this->api_key.$this->nonce);
+            $jsonParams = '';
+            if(!empty($this->params)) $jsonParams = json_encode($this->params);
+            return strval($this->method.$this->id.$this->api_key.$jsonParams.$this->nonce);
         }
     }
 
@@ -130,20 +133,24 @@ include 'variables/methods.php';
         public function getTicker($instrumentName, $timeFrame) {
             if($instrumentName) $this->bodyRequest->addParam(instrumentName, $instrumentName);
             if($timeFrame)      $this->bodyRequest->addParam(timeFrame, $timeFrame);
-            $this->bodyRequest->setDefault(POST, _private.'/'.getTicker);
-            $this->method->setMethodPOST(_private, getTicker, $this->bodyRequest);
+            $this->method->setMethodGET(_public, getTicker, $this->bodyRequest);
+            $this->bodyRequest = new BodyRequest();
+            return $this->method;
+        }
+
+        public function getCurrencyNetwork() {
+            $this->bodyRequest->setDefault(POST, addslashes(_private).getCurrencyNetwork);
+            $this->method->setMethodPOST(_private, getCurrencyNetwork, $this->bodyRequest);
             $this->bodyRequest = new BodyRequest();
             return $this->method;
         }
     }
 
-
     $test = new getMethods;
-    echo "<pre>".print_r($test->getBook(''), true)."</pre>";
-    echo "<br>";
-    echo "<pre>".print_r($test->getCandlestick('ETH_USDT', '1m'), true)."</pre>";
-    echo "<br>";
-    echo "<pre>".print_r($test->getTicker('ETH_USDT', '1m'), true)."</pre>";
+    TextFormatter::prettyPrint($test->getBook(''));
+    TextFormatter::prettyPrint($test->getCandlestick('ETH_USDT', '1m'));
+    TextFormatter::prettyPrint($test->getTicker('ETH_USDT', ''));
+    TextFormatter::prettyPrint($test->getCurrencyNetwork());
 
     echo hash_hmac(encType, $test->getTicker('ETH_USDT', '1m')->getMethodString(), secret_key);
 ?>
