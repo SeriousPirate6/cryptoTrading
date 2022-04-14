@@ -43,13 +43,15 @@ class CurlHelper {
 }
 
 $test = new getMethods;
-$test2 = $test->getCurrencyNetwork();
+$test2 = $test->getCandlestick('BTC_USDT', '1m');
+// $test2 = $test->getOrderHistory('BTC_USDT');
 TextFormatter::prettyPrint($test2);
 
 $action = $test2->type;
 $url = api_url.$test2->visibility.$test2->method;
 $parameters = str_replace('[]', '{}', str_replace('\\', '', json_encode((array) $test2->bodyRequest)));
-$result = CurlHelper::perform_http_request($action, $url, $parameters);
+if($test2->type == GET)     $result = CurlHelper::perform_http_request($action, $url);
+if($test2->type == POST)    $result = CurlHelper::perform_http_request($action, $url, $parameters);
 TextFormatter::prettyPrint($action);
 TextFormatter::prettyPrint($url);
 TextFormatter::prettyPrint($parameters);

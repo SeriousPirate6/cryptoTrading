@@ -101,7 +101,7 @@ include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
 
         function getToEncrypt() {
             $jsonParams = '';
-            if(!empty($this->params)) $jsonParams = json_encode($this->params);
+            if(!empty($this->params)) $jsonParams = str_replace(['{', '"', ':', '}'], ['', '', '', ''], json_encode($this->params));
             return strval($this->method.$this->id.$this->api_key.$jsonParams.$this->nonce);
         }
     }
@@ -139,8 +139,16 @@ include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
         }
 
         public function getCurrencyNetwork() {
-            $this->bodyRequest->setDefault(POST, addslashes(_private).getCurrencyNetwork);
+            $this->bodyRequest->setDefault(POST, _private.getCurrencyNetwork);
             $this->method->setMethodPOST(_private, getCurrencyNetwork, $this->bodyRequest);
+            $this->bodyRequest = new BodyRequest();
+            return $this->method;
+        }
+
+        public function getOrderHistory($instrumentName) {
+            $this->bodyRequest->addParam(instrumentName, $instrumentName);
+            $this->bodyRequest->setDefault(POST, _private.getOrderHistory);
+            $this->method->setMethodPOST(_private, getOrderHistory, $this->bodyRequest);
             $this->bodyRequest = new BodyRequest();
             return $this->method;
         }
@@ -151,6 +159,7 @@ include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
     TextFormatter::prettyPrint($test->getCandlestick('ETH_USDT', '1m'));
     TextFormatter::prettyPrint($test->getTicker('ETH_USDT', ''));
     TextFormatter::prettyPrint($test->getCurrencyNetwork());
+    TextFormatter::prettyPrint($test->getCurrencyNetwork('BTC_USDT'));
 
     echo hash_hmac(encType, $test->getTicker('ETH_USDT', '1m')->getMethodString(), secret_key);
 ?>
