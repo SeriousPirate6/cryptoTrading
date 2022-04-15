@@ -1,7 +1,6 @@
 <?php
 
 include 'methods.php';
-include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
 
 TextFormatter::prettyPrint(db_cred['name']);
 
@@ -57,7 +56,7 @@ TextFormatter::prettyPrint($url);
 TextFormatter::prettyPrint($parameters);
 
 TextFormatter::prettyPrint(json_decode($result, true));
-TextFormatter::prettyPrint($mynewarray['result']['data']['k']);
+$mynewarray = json_decode($result, true);
 
 $conn = new mysqli(db_cred['name'], db_cred['username'], db_cred['password'], db_cred['name']);
 
@@ -66,20 +65,22 @@ if ($conn->connect_error) {
 }
 TextFormatter::prettyPrint('Connected successfully');
 
-$query = 'SELECT ID FROM USERS';
+$currencyValue = Tables::currencyValue;
+
+$query = "SELECT ID FROM $currencyValue";
 $result = mysqli_query($conn, $query);
 
 if(empty($result)) {
-    $sql = 'CREATE TABLE MyGuests (
-        id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        firstname VARCHAR(30) NOT NULL,
-        lastname VARCHAR(30) NOT NULL,
-        email VARCHAR(50),
-        reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-    )';
+    $sql = "CREATE TABLE $currencyValue (
+        ID INT(10) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+        CURRENCY VARCHAR(30) NOT NULL,
+        PRICE FLOAT(30) NOT NULL,
+        TREND VARCHAR(4),
+        TIMEST TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )";
         
         if ($conn->query($sql) === TRUE) {
-            TextFormatter::prettyPrint('Table MyGuests created successfully');
+            TextFormatter::prettyPrint('Table created successfully');
         } else {
             TextFormatter::prettyPrint('Error creating table: '.$conn->error);
         }
@@ -87,6 +88,12 @@ if(empty($result)) {
     $conn->close();
 }
 
+$currency   = $mynewarray['result']['instrument_name'];
+$price      = $mynewarray['result']['data'][0]['o'];
+$trend      = Trend::UP;
 
+$query = "INSERT INTO $currencyValue (CURRENCY, PRICE, TREND) VALUES ('$currency', $price, '$trend');";
+$result = mysqli_query($conn, $query);
 
+TextFormatter::prettyPrint($query);
 ?>
