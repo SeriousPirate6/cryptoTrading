@@ -1,7 +1,7 @@
 <?php
 
-include 'utils/formatter.php';
-include 'variables/methods.php';
+include 'Utils/Formatter/Formatter.php';
+include 'Variables/Methods.php';
 include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
 
     class Method {
@@ -44,10 +44,6 @@ include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
 
         function getMethodString() {
             return $this->bodyRequest->getToEncrypt();
-        }
-
-        function getArrayRequest() {
-            return json_encode();
         }
     }
 

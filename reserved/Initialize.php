@@ -1,11 +1,11 @@
 <?php
 
-include 'methods.php';
+include 'MethodsImpl.php';
 
 TextFormatter::prettyPrint(db_cred['name']);
 
 class CurlHelper {
-    public static function perform_http_request($method, $url, $data = false) {
+    public static function perform_http_request($method, $url, $data = null) {
         $curl = curl_init();
     
         switch ($method) {
