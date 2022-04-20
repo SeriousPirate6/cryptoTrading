@@ -1,7 +1,4 @@
 <?php
-
-use createTable as GlobalCreateTable;
-
     include '../Connection/Conn.php';
     include '../../Variables/Tables.php';
 

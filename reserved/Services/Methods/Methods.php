@@ -1,8 +1,6 @@
 <?php
-
-include 'Utils/Formatter/Formatter.php';
-include 'Variables/Methods.php';
-include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
+    include '../../Variables/Methods.php';
+    include '../../R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
 
     class Method {
         public $visibility;
@@ -38,7 +36,6 @@ include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
                         secret_key
                     )
                 );
-                echo $this->bodyRequest->getToEncrypt();
             }
         }
 
@@ -101,61 +98,4 @@ include 'R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
             return strval($this->method.$this->id.$this->api_key.$jsonParams.$this->nonce);
         }
     }
-
-    class getMethods {
-        public $bodyRequest;
-        public $method;
-
-        public function __construct() {
-            $this->bodyRequest = new BodyRequest();
-            $this->method      = new Method();
-        }
-        
-        public function getBook($instrumentName) {
-            if($instrumentName) $this->bodyRequest->addParam(instrumentName, $instrumentName);
-            $this->method->setMethodGET(_public, getBook, $this->bodyRequest);
-            $this->bodyRequest = new BodyRequest();
-            return $this->method;
-        }
-
-        public function getCandlestick($instrumentName, $timeFrame) {
-            if($instrumentName) $this->bodyRequest->addParam(instrumentName, $instrumentName);
-            if($timeFrame)      $this->bodyRequest->addParam(timeFrame, $timeFrame);
-            $this->method->setMethodGET(_public, getCandlestick, $this->bodyRequest);
-            $this->bodyRequest = new BodyRequest();
-            return $this->method;
-        }
-
-        public function getTicker($instrumentName, $timeFrame) {
-            if($instrumentName) $this->bodyRequest->addParam(instrumentName, $instrumentName);
-            if($timeFrame)      $this->bodyRequest->addParam(timeFrame, $timeFrame);
-            $this->method->setMethodGET(_public, getTicker, $this->bodyRequest);
-            $this->bodyRequest = new BodyRequest();
-            return $this->method;
-        }
-
-        public function getCurrencyNetwork() {
-            $this->bodyRequest->setDefault(POST, _private.getCurrencyNetwork);
-            $this->method->setMethodPOST(_private, getCurrencyNetwork, $this->bodyRequest);
-            $this->bodyRequest = new BodyRequest();
-            return $this->method;
-        }
-
-        public function getOrderHistory($instrumentName) {
-            $this->bodyRequest->addParam(instrumentName, $instrumentName);
-            $this->bodyRequest->setDefault(POST, _private.getOrderHistory);
-            $this->method->setMethodPOST(_private, getOrderHistory, $this->bodyRequest);
-            $this->bodyRequest = new BodyRequest();
-            return $this->method;
-        }
-    }
-
-    $test = new getMethods;
-    TextFormatter::prettyPrint($test->getBook(''));
-    TextFormatter::prettyPrint($test->getCandlestick('ETH_USDT', '1m'));
-    TextFormatter::prettyPrint($test->getTicker('ETH_USDT', ''));
-    TextFormatter::prettyPrint($test->getCurrencyNetwork());
-    TextFormatter::prettyPrint($test->getCurrencyNetwork('BTC_USDT'));
-
-    echo hash_hmac(encType, $test->getTicker('ETH_USDT', '1m')->getMethodString(), secret_key);
 ?>

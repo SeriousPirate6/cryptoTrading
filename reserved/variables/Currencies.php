@@ -1,6 +1,8 @@
 <?php
-    abstract class Tables {
-        const currencyValue = 'CURRENCY_VALUE';
+    // Values
+    abstract class Currencies {
+        const BTC_USDT = 'BTC_USDT';
+        const ETH_USDT = 'ETH_USDT';
     }
 
     // Trend

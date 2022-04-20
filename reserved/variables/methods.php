@@ -17,6 +17,7 @@
     const getCandlestick        = 'get-candlestick';
     const getCurrencyNetwork    = 'get-currency-networks';
     const getDepositAddress     = 'get-deposit-address';
+    const getInstruments        = 'get-instruments';
     const getOrderHistory       = 'get-order-history';
     const getTicker             = 'get-ticker';
 
@@ -31,4 +32,8 @@
 
     // Encryption type
     const encType               = 'sha256';
+
+    // Time frame
+    const m1                    = '1m';
+    const m5                    = '5m';
 ?>
