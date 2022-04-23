@@ -1,7 +1,7 @@
 <?php
     include 'Methods.php';
 
-    class getMethods {
+    class GetMethods {
         public $bodyRequest;
         public $method;
 
@@ -52,6 +52,24 @@
             $this->method->setMethodPOST(_private, getOrderHistory, $this->bodyRequest);
             $this->bodyRequest = new BodyRequest();
             return $this->method;
+        }
+    }
+
+    class GetMultipleMethods {
+        public $methods;
+        public $m;
+
+        public function __construct() {
+            $this->methods  = array();
+            $this->m        = new GetMethods();
+        }
+
+        public function getCandlestick($instrumentNames, $timeFrame) {
+            foreach ($instrumentNames as $instrumentName) {
+                array_push($this->methods, $this->m->getCandlestick($instrumentName, $timeFrame));
+                $this->m = new GetMethods();
+            }
+            return $this->methods;
         }
     }
 ?>
