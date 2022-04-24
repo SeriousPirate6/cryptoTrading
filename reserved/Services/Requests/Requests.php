@@ -1,7 +1,7 @@
 <?php
     include '../../MethodsImpl.php';
     
-    class sendRequest {
+    class SendRequest {
         private static function perform_http_request($method, $url, $data = null) {
             $curl = curl_init();
         
@@ -29,15 +29,23 @@
             return $result;
         }
 
-        public static function sendReuquestFromMethod($method) {
+        public static function sendReuquest($method) {
             $action = $method->type;
             $url = api_url.$method->visibility.$method->method;
             $parameters = str_replace('[]', '{}', str_replace('\\', '', json_encode((array) $method->bodyRequest)));
             
-            if($method->type == GET)     $result = sendRequest::perform_http_request($action, $url);
-            if($method->type == POST)    $result = sendRequest::perform_http_request($action, $url, $parameters);
+            if($method->type == GET)     $result = SendRequest::perform_http_request($action, $url);
+            if($method->type == POST)    $result = SendRequest::perform_http_request($action, $url, $parameters);
             
             return json_decode($result, true);
+        }
+
+        public static function sendMultiRequest($methods) {
+            $requests = array();
+            foreach ($methods as $method) {
+                array_push($requests, SendRequest::sendReuquest($method));
+            }
+            return $requests;
         }
     }
 ?>

@@ -28,10 +28,12 @@
             $conn->close();
         }
 
-        public static function multipleInsert($query) {
+        public static function multipleInsert($queries) {
             global $conn;
-
-            if ($conn->multi_query($query) === FALSE) {
+            $gigaQuery = implode(PHP_EOL, $queries);
+            TextFormatter::prettyPrint($gigaQuery);
+            
+            if ($conn->multi_query($gigaQuery) === FALSE) {
                 TextFormatter::prettyPrint('Error entering data: '.$conn->error);
             }
             $conn->close();

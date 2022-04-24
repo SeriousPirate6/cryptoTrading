@@ -2,7 +2,7 @@
     include '../Connection/Conn.php';
     include '../../Variables/Tables.php';
 
-    abstract class createTable {
+    abstract class CreateTable {
         public static function currencyValue() {
             global $constants;
             return "CREATE TABLE {$constants['Tables'][0]} (
@@ -15,23 +15,26 @@
         }
     }
     
-    abstract class insertTable {
+    abstract class InsertTable {
         public static function currencyValue($currency, $price, $trend) {
             global $constants;
             return "INSERT INTO {$constants['Tables'][0]} (CURRENCY, PRICE, TREND) VALUES ('$currency', $price, '$trend');";
         }
     }
 
-    abstract class multipleInsertTable {
+    abstract class MultipleInsertTable {
         public static function currencyValue($array) {
             global $constants;
-            $query = '';
+            $queries = array();
 
             foreach ($array as $key => $val) {
-                $query = "INSERT INTO {$constants['Tables'][0]} (CURRENCY, PRICE, TREND) VALUES ('$val[0]', $val[1], '$val[2]');\n".$query;
+                $currency   = $val['result']['instrument_name'];
+                $price      = $val['result']['data'][0]['o'];
+                
+                array_push($queries, "INSERT INTO {$constants['Tables'][0]} (CURRENCY, PRICE, TREND) VALUES ('$currency', $price, 'UP');");
             }
 
-            return $query;
+            return $queries;
         }
     }
 ?>
