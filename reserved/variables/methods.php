@@ -23,6 +23,7 @@
 
     // Params
     const currency              = 'currency';
+    const depth                 = 'depth';
     const instrumentName        = 'instrument_name';
     const price                 = 'price';
     const quantity              = 'quantity';
@@ -36,4 +37,10 @@
     // Time frame
     const m1                    = '1m';
     const m5                    = '5m';
+
+    // Depth
+    const d1                    = 1;
+    const d6                    = 6;
+    const d10                   = 10;
+    const d60                   = 60;
 ?>

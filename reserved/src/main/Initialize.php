@@ -4,7 +4,7 @@
     include '../../Services/Methods/MethodsImpl.php';
 
     $method     = new GetMethods;
-    $methodImpl = $method->getCandlestick(Currencies::MATIC_USDT, m1);
+    $methodImpl = $method->getCandlestick(Currencies::MATIC_USDT, m1, d1);
 
     // $request    = SendRequest::sendReuquest($methodImpl);
     // $inst_name  = $request['result']['instrument_name'];
@@ -19,16 +19,18 @@
 
     $currList = CurrenciesList::getOptions();
     $multiMethods = new GetMultipleMethods();
-    $multiMethods = $multiMethods->getCandlestick($currList, m1);
+    $multiMethods = $multiMethods->getCandlestick($currList, m1, d1);
     TextFormatter::prettyPrint($multiMethods);
 
     $requests = SendRequest::sendMultiRequest($multiMethods);
 
-    // TextFormatter::prettyPrint($requests);
+    TextFormatter::prettyPrint($requests);
 
     $queries = MultipleInsertTable::currencyValue($requests);
 
     TextFormatter::prettyPrint($queries);
 
     RunQuery::multipleInsert($queries);
+
+    RunQuery::insert("INSERT INTO CURRENCY_VALUE (CURRENCY, PRICE, TREND) VALUES ('BTC_USDT', 42000, 'UP');");
 ?>

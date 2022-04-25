@@ -6,6 +6,8 @@
     abstract class RunQuery {
         public static function create($tableName, $query) {
             global $conn;
+            $conn = Database::connect();
+
             $checkTable = "SELECT ID FROM $tableName";
             $result = mysqli_query($conn, $checkTable);
             
@@ -21,6 +23,7 @@
 
         public static function insert($query) {
             global $conn;
+            $conn = Database::connect();
 
             if ($conn->query($query) === FALSE) {
                 TextFormatter::prettyPrint('Error entering data: '.$conn->error);
@@ -30,6 +33,8 @@
 
         public static function multipleInsert($queries) {
             global $conn;
+            $conn = Database::connect();
+            
             $gigaQuery = implode(PHP_EOL, $queries);
             TextFormatter::prettyPrint($gigaQuery);
             

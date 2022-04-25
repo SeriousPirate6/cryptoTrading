@@ -23,9 +23,10 @@
             return $this->method;
         }
 
-        public function getCandlestick($instrumentName, $timeFrame) {
+        public function getCandlestick($instrumentName, $timeFrame, $depth) {
             if($instrumentName) $this->bodyRequest->addParam(instrumentName, $instrumentName);
             if($timeFrame)      $this->bodyRequest->addParam(timeFrame, $timeFrame);
+            if($depth)          $this->bodyRequest->addParam(depth, $depth);
             $this->method->setMethodGET(_public, getCandlestick, $this->bodyRequest);
             $this->bodyRequest = new BodyRequest();
             return $this->method;
@@ -64,9 +65,9 @@
             $this->m        = new GetMethods();
         }
 
-        public function getCandlestick($instrumentNames, $timeFrame) {
+        public function getCandlestick($instrumentNames, $timeFrame, $depth) {
             foreach ($instrumentNames as $instrumentName) {
-                array_push($this->methods, $this->m->getCandlestick($instrumentName, $timeFrame));
+                array_push($this->methods, $this->m->getCandlestick($instrumentName, $timeFrame, $depth));
                 $this->m = new GetMethods();
             }
             return $this->methods;
