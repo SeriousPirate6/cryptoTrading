@@ -32,5 +32,5 @@
 
     RunQuery::multipleInsert($queries);
 
-    RunQuery::insert("INSERT INTO CURRENCY_VALUE (CURRENCY, PRICE, TREND) VALUES ('BTC_USDT', 42000, 'UP');");
+    // RunQuery::insert("INSERT INTO CURRENCY_VALUE (CURRENCY, PRICE, TREND) VALUES ('BTC_USDT', 42000, 'UP');");
 ?>

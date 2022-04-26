@@ -16,10 +16,11 @@
             return $instance;
         }
 
-        public function addParam($name, $type, $size = null, $constraint = null, $value = null, $required = true) {
-            if($this->queryParams == null) $this->queryParams = array();
-            if(is_array($this->queryParams)) {
-                array_push($this->queryParams, QueryParam::fill($name, $type, $size, $constraint, $value, $required));
+        public function addParam($name, $type, $size = null, $constraintOrValue = null) {
+            if ($this->queryParams == null) $this->queryParams = array();
+            if (is_array($this->queryParams)) {
+                if ($this->type == CREATE) array_push($this->queryParams, QueryParam::fill($name, $type, $size, $constraintOrValue));
+                if ($this->type == INSERT) array_push($this->queryParams, QueryParam::fill($name, $type, $size, null, $constraintOrValue));
             }
         }
     }
@@ -30,18 +31,16 @@
         public $size;
         public $constraint;
         public $value;
-        public $required;
 
         public function __construct() {}
 
-        public static function fill($name, $type, $size = null, $constraint = null, $value = null, $required = true) {
+        public static function fill($name, $type, $size = null, $constraint = null, $value = null) {
             $instance               = new self();
             $instance->name         = $name;
             $instance->type         = $type;
             $instance->size         = $size;
             $instance->constraint   = $constraint;
             $instance->value        = $value;
-            $instance->required     = $required;
             return $instance;
         }
     }
