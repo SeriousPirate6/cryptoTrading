@@ -41,7 +41,6 @@
             }
 
             $gigaQuery = trim($gigaQuery);
-            TextFormatter::prettyPrint($gigaQuery);
             
             if ($conn->multi_query($gigaQuery) === FALSE) {
                 TextFormatter::prettyPrint('Error entering data: '.$conn->error);

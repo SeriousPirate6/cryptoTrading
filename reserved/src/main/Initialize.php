@@ -24,13 +24,11 @@
 
     $requests = SendRequest::sendMultiRequest($multiMethods);
 
-    TextFormatter::prettyPrint($requests);
+    // TextFormatter::prettyPrint($requests);
 
     $queries = MultipleInsertTable::currencyValue($requests);
 
-    TextFormatter::prettyPrint($queries);
-
     RunQuery::multipleInsert($queries);
 
-    // RunQuery::insert("INSERT INTO CURRENCY_VALUE (CURRENCY, PRICE, TREND) VALUES ('BTC_USDT', 42000, 'UP');");
+    RunQuery::insert(InsertTable::currencyValue('a', 0, 'b'));
 ?>
