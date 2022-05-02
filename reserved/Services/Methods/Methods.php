@@ -42,6 +42,11 @@
         function getMethodString() {
             return $this->bodyRequest->getToEncrypt();
         }
+
+        function toString() {
+            if ($this->type == GET)   return $this->visibility.$this->method;
+            if ($this->type == POST)  return $this->visibility.$this->method.' -> '.json_encode($this->bodyRequest->params, true);
+        }
     }
 
     class BodyRequest {

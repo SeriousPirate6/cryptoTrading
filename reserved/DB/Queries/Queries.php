@@ -19,7 +19,6 @@
             $instance->query->addParam('TREND',     'VARCHAR',      4                                        );
             $instance->query->addParam('TIMEST',    'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
             $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
-            TextFormatter::prettyPrint($instance->query);
             return $instance->query;
         }
 
@@ -40,7 +39,6 @@
             $instance->query->addParam('MIN_QUANTITY',         'FLOAT',        20);
             $instance->query->addParam('TIMEST',               'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
             $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
-            TextFormatter::prettyPrint($instance->query);
             return $instance->query;
         }
     }
@@ -57,7 +55,6 @@
             $instance->query->addParam('PRICE',     'FLOAT',    30, $price);
             $instance->query->addParam('TREND',     'VARCHAR',   4, $trend);
             $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
-            TextFormatter::prettyPrint($instance->query);
             return $instance->query;
         }
     }

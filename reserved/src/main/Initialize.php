@@ -3,32 +3,18 @@
     include '../../Services/Requests/Requests.php';
     include '../../Services/Methods/MethodsImpl.php';
 
-    $method     = new GetMethods;
-    $methodImpl = $method->getCandlestick(Currencies::MATIC_USDT, m1, d1);
+    // Singlerequest
+    $method             = new GetMethods;
+    $methodImpl         = $method->getOrderHistory(CurrenciesList::DOT_USDT);
 
-    // $request    = SendRequest::sendReuquest($methodImpl);
-    // $inst_name  = $request['result']['instrument_name'];
-    // $curr_value = $request['result']['data'][0]['o'];
+    // Multirequest
+    $currList           = CurrenciesList::getOptions();
+    $multiMethods       = new GetMultipleMethods();
+    $multiMethodsImpl   = $multiMethods->getCandlestick($currList, m1, d1);
 
-    // $query      = InsertTable::currencyValue($inst_name, $curr_value, Trend::UP);
+    $requests           = SendRequest::sendMultiRequest($multiMethodsImpl);
 
-    // RunQuery::insert($query);
-
-    // TextFormatter::prettyPrint($request);
-    // TextFormatter::prettyPrint($query);
-
-    $currList = CurrenciesList::getOptions();
-    $multiMethods = new GetMultipleMethods();
-    $multiMethods = $multiMethods->getCandlestick($currList, m1, d1);
-    TextFormatter::prettyPrint($multiMethods);
-
-    $requests = SendRequest::sendMultiRequest($multiMethods);
-
-    // TextFormatter::prettyPrint($requests);
-
-    $queries = MultipleInsertTable::currencyValue($requests);
-
+    // Multiquery
+    $queries            = MultipleInsertTable::currencyValue($requests);
     RunQuery::multipleInsert($queries);
-
-    RunQuery::insert(InsertTable::currencyValue('a', 0, 'b'));
 ?>

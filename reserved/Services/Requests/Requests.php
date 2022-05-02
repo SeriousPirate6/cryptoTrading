@@ -29,7 +29,7 @@
             return $result;
         }
 
-        public static function sendReuquest($method) {
+        public static function sendReuquest($method, $print = false) {
             $action = $method->type;
             $url = api_url.$method->visibility.$method->method;
             $parameters = str_replace('[]', '{}', str_replace('\\', '', json_encode((array) $method->bodyRequest)));
@@ -37,14 +37,20 @@
             if($method->type == GET)     $result = SendRequest::perform_http_request($action, $url);
             if($method->type == POST)    $result = SendRequest::perform_http_request($action, $url, $parameters);
             
-            return json_decode($result, true);
+            $result = json_decode($result, true);
+
+            if ($print) TextFormatter::prettyPrint($result);
+
+            return $result;
         }
 
-        public static function sendMultiRequest($methods) {
-            $requests = array();
+        public static function sendMultiRequest($methods, $print = false) {
+            $requests           = array();
+
             foreach ($methods as $method) {
-                array_push($requests, SendRequest::sendReuquest($method));
+                array_push($requests, SendRequest::sendReuquest($method, $print));
             }
+            
             return $requests;
         }
     }
