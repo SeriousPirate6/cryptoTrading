@@ -57,6 +57,24 @@
             $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
             return $instance->query;
         }
+
+        public static function currencyData($instName, $quote, $base, $priceDec, $quantityDec, $maxQuant, $minQuant) {
+            global $constants;
+            $instance = new self();
+            $instance->query = Query::fill(
+                $constants['Tables']['currencyData'],
+                INSERT
+            );
+            $instance->query->addParam('INSTRUMENT_NAME',      'VARCHAR',      30, $instName);
+            $instance->query->addParam('QUOTE_CURRENCY',       'VARCHAR',      10, $quote);
+            $instance->query->addParam('BASE_CURRENCY',        'VARCHAR',      10, $base);
+            $instance->query->addParam('PRICE_DECIMALS',       'INT',          10, $priceDec);
+            $instance->query->addParam('QUANTITY_DECIMALS',    'INT',          10, $quantityDec);
+            $instance->query->addParam('MAX_QUANTITY',         'FLOAT',        20, $maxQuant);
+            $instance->query->addParam('MIN_QUANTITY',         'FLOAT',        20, $minQuant);
+            $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+            return $instance->query;
+        }
     }
 
     class MultipleInsertTable {
@@ -69,6 +87,24 @@
                 $trend      = 'UP';
                 
                 array_push($queries, InsertTable::currencyValue($currency, $price, $trend));
+            }
+
+            return $queries;
+        }
+
+        public static function currencyData($array) {
+            $queries = array();
+
+            foreach ($array['result']['instruments'] as $key => $val) {
+                $instName       = $val['instrument_name'];
+                $quote          = $val['quote_currency'];
+                $base           = $val['base_currency'];
+                $priceDec       = $val['price_decimals'];
+                $quantityDec    = $val['quantity_decimals'];
+                $maxQuant       = $val['max_quantity'];
+                $minQuant       = $val['min_quantity'];
+                
+                array_push($queries, InsertTable::currencyData($instName, $quote, $base, $priceDec, $quantityDec, $maxQuant, $minQuant));
             }
 
             return $queries;

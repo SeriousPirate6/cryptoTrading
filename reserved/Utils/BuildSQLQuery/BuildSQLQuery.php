@@ -9,7 +9,7 @@
             if ($type == CREATE) {
                 $params = '';
                 foreach (array_reverse($query->queryParams) as $param) {
-                    $size = $param->size != 0 ? " (".$param->size.") " : '';
+                    $size = $param->size != 0 ? " (".$param->size.") " : ' ';
                     $params = "\n        ".trim($param->name." ".$param->type.$size.$param->constraint).",".$params;
                 }
                 return $query->type." TABLE ".$query->tableName.$query->name." (".substr($params, 0, -1)."\n    );";
