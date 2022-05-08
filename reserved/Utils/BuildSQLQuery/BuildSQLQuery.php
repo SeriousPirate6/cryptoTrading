@@ -26,6 +26,14 @@
                 }
                 return $query->type." INTO ".$query->tableName." (".substr(trim($names), 0, -1).") VALUES (".substr(trim($values), 0, -1).");";
             }
+
+            if ($type == SELECT) {
+                $names = '';
+                foreach (array_reverse($query->queryParams) as $param) {
+                    $names = $param->name.", ".$names;
+                }
+                return $query->type." ".substr(trim($names), 0, -1)." FROM ".$query->tableName;
+            }
         }
     }
 ?>

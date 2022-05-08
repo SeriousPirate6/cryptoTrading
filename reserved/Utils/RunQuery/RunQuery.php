@@ -36,6 +36,39 @@
             $conn->close();
         }
 
+        public static function select($query, $print = false) {
+            global $conn;
+            $conn = Database::connect();
+            
+            if ($print) TextFormatter::prettyPrint($query);
+            else TextFormatter::prettyPrint($query->sqlCommand);
+
+            $result = $conn->query($query->sqlCommand);
+            TextFormatter::prettyPrint($result);
+
+            if ($result === FALSE) {
+                TextFormatter::prettyPrint('Error selecting data: '.$conn->error);
+            }
+            $conn->close();
+
+            $vals   = array();
+
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    foreach ($query->queryParams as $val) {
+                        array_push($vals, $row[$val->name]);
+                    }
+                    if ($print) TextFormatter::prettyPrint($query);
+                    else TextFormatter::prettyPrint($vals);
+                    
+                    $query->addValue($vals);
+                    $vals = array();
+                }
+            } else {
+                echo "0 results";
+            }
+        }
+
         public static function multipleInsert($queries, $print = false) {
             global $conn;
             $conn = Database::connect();

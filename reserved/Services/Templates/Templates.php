@@ -17,7 +17,7 @@
         }
 
         // Return all instrument names available and save them on DB;
-        public static function currencyValue() {
+        public static function currencyData() {
             
             // Create table if non existing;
             $method             = new GetMethods;

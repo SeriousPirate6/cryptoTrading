@@ -29,8 +29,7 @@
                 $constants['Tables']['currencyData'],
                 CREATE
             );
-            $instance->query->addParam('ID',                   'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
-            $instance->query->addParam('INSTRUMENT_NAME',      'VARCHAR',      30, 'NOT NULL');
+            $instance->query->addParam('INSTRUMENT_NAME',      'VARCHAR',      30, 'PRIMARY KEY');
             $instance->query->addParam('QUOTE_CURRENCY',       'VARCHAR',      10, 'NOT NULL');
             $instance->query->addParam('BASE_CURRENCY',        'VARCHAR',      10, 'NOT NULL');
             $instance->query->addParam('PRICE_DECIMALS',       'INT',          10);
@@ -44,20 +43,6 @@
     }
     
     class InsertTable {
-        public static function currencyValue($currency, $price, $trend) {
-            global $constants;
-            $instance = new self();
-            $instance->query = Query::fill(
-                $constants['Tables']['currencyValue'],
-                INSERT
-            );
-            $instance->query->addParam('CURRENCY',  'VARCHAR',  30, $currency);
-            $instance->query->addParam('PRICE',     'FLOAT',    30, $price);
-            $instance->query->addParam('TREND',     'VARCHAR',   4, $trend);
-            $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
-            return $instance->query;
-        }
-
         public static function currencyData($instName, $quote, $base, $priceDec, $quantityDec, $maxQuant, $minQuant) {
             global $constants;
             $instance = new self();
@@ -75,23 +60,57 @@
             $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
             return $instance->query;
         }
+
+        public static function currencyValue($currency, $price, $trend) {
+            global $constants;
+            $instance = new self();
+            $instance->query = Query::fill(
+                $constants['Tables']['currencyValue'],
+                INSERT
+            );
+            $instance->query->addParam('CURRENCY',  'VARCHAR',  30, $currency);
+            $instance->query->addParam('PRICE',     'FLOAT',    30, $price);
+            $instance->query->addParam('TREND',     'VARCHAR',   4, $trend);
+            $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+            return $instance->query;
+        }
+    }
+
+    class selectFrom {
+        public static function currencyData() {
+            global $constants;
+            $instance = new self();
+            $instance->query = Query::fill(
+                $constants['Tables']['currencyData'],
+                SELECT
+            );
+            $instance->query->addParam('INSTRUMENT_NAME');
+            $instance->query->addParam('QUOTE_CURRENCY');
+            $instance->query->addParam('BASE_CURRENCY');
+            $instance->query->addParam('PRICE_DECIMALS');
+            $instance->query->addParam('QUANTITY_DECIMALS');
+            $instance->query->addParam('MAX_QUANTITY');
+            $instance->query->addParam('MIN_QUANTITY');
+            $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+            return $instance->query;
+        }
+
+        public static function currencyValue() {
+            global $constants;
+            $instance = new self();
+            $instance->query = Query::fill(
+                $constants['Tables']['currencyValue'],
+                SELECT
+            );
+            $instance->query->addParam('CURRENCY');
+            $instance->query->addParam('PRICE');
+            $instance->query->addParam('TREND');
+            $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+            return $instance->query;
+        }
     }
 
     class MultipleInsertTable {
-        public static function currencyValue($array) {
-            $queries = array();
-
-            foreach ($array as $key => $val) {
-                $currency   = $val['result']['instrument_name'];
-                $price      = $val['result']['data'][0]['o'];
-                $trend      = 'UP';
-                
-                array_push($queries, InsertTable::currencyValue($currency, $price, $trend));
-            }
-
-            return $queries;
-        }
-
         public static function currencyData($array) {
             $queries = array();
 
@@ -105,6 +124,20 @@
                 $minQuant       = $val['min_quantity'];
                 
                 array_push($queries, InsertTable::currencyData($instName, $quote, $base, $priceDec, $quantityDec, $maxQuant, $minQuant));
+            }
+
+            return $queries;
+        }
+
+        public static function currencyValue($array) {
+            $queries = array();
+
+            foreach ($array as $key => $val) {
+                $currency   = $val['result']['instrument_name'];
+                $price      = $val['result']['data'][0]['o'];
+                $trend      = 'UP';
+                
+                array_push($queries, InsertTable::currencyValue($currency, $price, $trend));
             }
 
             return $queries;
