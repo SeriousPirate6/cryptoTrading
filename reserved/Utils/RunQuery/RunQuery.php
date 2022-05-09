@@ -54,16 +54,20 @@
             $vals   = array();
 
             if ($result->num_rows > 0) {
+                $text = new TextFormatter($query->tableName.', '.$query->type);
                 while ($row = $result->fetch_assoc()) {
                     foreach ($query->queryParams as $val) {
                         array_push($vals, $row[$val->name]);
                     }
                     if ($print) TextFormatter::prettyPrint($query);
-                    else TextFormatter::prettyPrint($vals);
+                    else {
+                        $text->addToPrint($vals);
+                    }
                     
                     $query->addValue($vals);
                     $vals = array();
                 }
+                $text->collapsablePrint();
             } else {
                 echo "0 results";
             }
