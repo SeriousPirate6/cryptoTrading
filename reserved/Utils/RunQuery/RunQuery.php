@@ -44,7 +44,6 @@
             else TextFormatter::prettyPrint($query->sqlCommand);
 
             $result = $conn->query($query->sqlCommand);
-            TextFormatter::prettyPrint($result);
 
             if ($result === FALSE) {
                 TextFormatter::prettyPrint('Error selecting data: '.$conn->error);
@@ -54,7 +53,7 @@
             $vals   = array();
 
             if ($result->num_rows > 0) {
-                $text = new TextFormatter($query->tableName.', '.$query->type);
+                $text = new TextFormatter($query->type.', '.$query->tableName.', '.$result->num_rows.' records, '.$result->field_count.' fields');
                 while ($row = $result->fetch_assoc()) {
                     foreach ($query->queryParams as $val) {
                         array_push($vals, $row[$val->name]);

@@ -10,5 +10,5 @@
     // Templates::currencyData();
 
     RunQuery::select(selectFrom::currencyData());
-    // RunQuery::select(selectFrom::currencyValue());
+    RunQuery::select(selectFrom::currencyValue());
 ?>
