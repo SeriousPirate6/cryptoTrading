@@ -54,19 +54,25 @@
 
             if ($result->num_rows > 0) {
                 $text = new TextFormatter($query->type.', '.$query->tableName.', '.$result->num_rows.' records, '.$result->field_count.' fields');
-                while ($row = $result->fetch_assoc()) {
+                if (!$print) {
                     foreach ($query->queryParams as $val) {
-                        array_push($vals, $row[$val->name]);
+                        array_push($vals, $val->name);
                     }
-                    if ($print) TextFormatter::prettyPrint($query);
-                    else {
-                        $text->addToPrint($vals);
-                    }
-                    
-                    $query->addValue($vals);
+                    $text->addToPrint($vals);
                     $vals = array();
                 }
-                $text->collapsablePrint();
+                while ($row = $result->fetch_assoc()) {
+                    if ($print) TextFormatter::prettyPrint($query);
+                    else {
+                        foreach ($query->queryParams as $val) {
+                            array_push($vals, $row[$val->name]);
+                        }
+                        $text->addToPrint($vals);
+                        $query->addValue($vals);
+                        $vals = array();
+                    }
+                }
+                $text->collapsablePrint($text->array);
             } else {
                 echo "0 results";
             }

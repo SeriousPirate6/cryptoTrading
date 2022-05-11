@@ -22,8 +22,45 @@
             .content {
                 padding: 0 18px;
                 display: none;
-                overflow: hidden;
+                overflow-y: auto;
                 background-color: #3f3f3f;
+            }
+
+            div {
+                max-height: 350px;
+            }
+
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            tbody {
+                overflow-y: auto;
+                overflow-x: hidden;
+                width: 100%;
+            }
+
+            .count {
+                width: 5%;
+            }
+
+            td, th {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px 12px;
+            }
+
+            th {
+                color: green;
+                background-color: #3f3f3f;
+                position: sticky;
+                top: 0;
+            }
+
+            tr:nth-child(even) {
+                background-color: #dddddd;
             }
         </style>
     </head>
