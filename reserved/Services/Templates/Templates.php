@@ -2,15 +2,16 @@
     include '../../Utils/RunQuery/RunQuery.php';
     include '../../Services/Requests/Requests.php';
     include '../../Services/Methods/MethodsImpl.php';
+    include '../../Utils/ExtractFromRequest/ExtractFromRequest.php';
 
     class Templates {
         // Returns candlesticks for a list of currencies and save the results on DB;
-        public static function candlestick() {
+        public static function candlestick($print = false) {
             $currList           = CurrenciesList::getOptions();
             $multiMethods       = new GetMultipleMethods();
             $multiMethodsImpl   = $multiMethods->getCandlestick($currList, m1, d1);
 
-            $requests           = SendRequest::sendMultiRequest($multiMethodsImpl);
+            $requests           = SendRequest::sendMultiRequest($multiMethodsImpl, $print);
 
             $queries            = MultipleInsertTable::currencyValue($requests);
             RunQuery::multipleInsert($queries);

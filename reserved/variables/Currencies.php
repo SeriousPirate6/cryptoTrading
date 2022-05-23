@@ -5,7 +5,6 @@
         const ETH_USDT      = 'ETH_USDT';
         const XRP_USDT      = 'XRP_USDT';
         const SOL_USDT      = 'SOL_USDT';
-        const LUNA_USDT     = 'LUNA_USDT';
         const ADA_USDT      = 'ADA_USDT';
         const AVAX_USDT     = 'AVAX_USDT';
         const DOT_USDT      = 'DOT_USDT';
