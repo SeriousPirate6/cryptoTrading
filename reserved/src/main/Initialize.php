@@ -27,12 +27,31 @@
 
     $arr =  ([
         't' => 1653336060000,
-        'o' => 61.80,
-        'h' => 100,
-        'l' => 0,
-        'c' => 80,
+        'o' => 330,
+        'h' => 400,
+        'l' => 200,
+        'c' => 360,
         'v' => 489.905
     ]);
 
+    $ar2 =  [([
+        't' => 1653336060000,
+        'o' => 330,
+        'h' => 400,
+        'l' => 200,
+        'c' => 360,
+        'v' => 489.905
+    ]),
+    ([
+        't' => 1653336080000,
+        'o' => 200,
+        'h' => 400,
+        'l' => 150,
+        'c' => 160,
+        'v' => 489.905
+    ])];
+
     TextFormatter::prettyPrint(Math::isThirtyEight($arr));
+    TextFormatter::prettyPrint(Math::getBodyCandle($arr));
+    TextFormatter::prettyPrint(Math::isEngulfingCandle($ar2));
 ?>

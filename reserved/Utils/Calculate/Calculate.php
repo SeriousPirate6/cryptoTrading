@@ -1,7 +1,27 @@
 <?php
     class Math {
+        // Percentage
+        // Return the gain or loss percentage between two given values
         public static function percentage($n1, $n2) {
             return round(($n2 * 100 / $n1 - 100), 2, PHP_ROUND_HALF_EVEN); 
+        }
+        
+        // Check if the candlestick is red or green
+        // True: the candlestick is green
+        // False: the candlestick is red
+        public static function isGoingUp($candlestick) {
+            if ($candlestick['c'] > $candlestick['o']) {
+                echo ' - UP - ';
+                return true;
+            } else {
+                echo ' - DOWN - ';
+                return false;
+            }
+        }
+
+        public static function getBodyCandle($candlestick) {
+            if (Math::isGoingUp($candlestick)) return $candlestick['c'] - $candlestick['o'];
+            return $candlestick['o'] - $candlestick['c'];
         }
 
         // Average True Range
@@ -53,17 +73,20 @@
             }
         }
 
-        // Check if the candlestick is red or green
-        // True: the candlestick is green
-        // False: the candlestick is red
-        public static function isGoingUp($candlestick) {
-            if ($candlestick['c'] > $candlestick['o']) {
-                echo ' - UP - ';
-                return true;
-            } else {
-                echo ' - DOWN - ';
-                return false;
+        // Engulfing Candle
+        // Return true if between two given candles, the second's body is greater than the first, and the trend is reversed
+        public static function isEngulfingCandle($array) {
+            if (sizeof($array) != 2) {
+                return 'Array must contains two candles to execute the function';
             }
+            $firstCand  = $array[0];
+            $secondCand = $array[1];
+            if (Math::isGoingUp($firstCand) != Math::isGoingUp($secondCand)) {
+                if (Math::getBodyCandle($firstCand) <= Math::getBodyCandle($secondCand)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 ?>
