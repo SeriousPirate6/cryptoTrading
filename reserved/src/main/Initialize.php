@@ -53,5 +53,5 @@
 
     TextFormatter::prettyPrint(Math::isThirtyEight($arr));
     TextFormatter::prettyPrint(Math::getBodyCandle($arr));
-    TextFormatter::prettyPrint(Math::isEngulfingCandle($ar2));
+    TextFormatter::prettyPrint(Math::isEngulfing($ar2));
 ?>
