@@ -12,10 +12,8 @@
         // False: the candlestick is red
         public static function isGoingUp($candlestick) {
             if ($candlestick['c'] > $candlestick['o']) {
-                echo ' - UP - ';
                 return true;
             } else {
-                echo ' - DOWN - ';
                 return false;
             }
         }
@@ -65,12 +63,10 @@
         public static function isThirtyEight($candlestick) {
             if (Math::isGoingUp($candlestick)) {
                 $thirtyEight = $candlestick['h'] - (($candlestick['h'] - $candlestick['l']) / 100 * 38.2);
-                var_dump($thirtyEight);
                 if ($thirtyEight <= $candlestick['o']) return true;
                 return false;
             } else {
                 $thirtyEight = ($candlestick['h'] - $candlestick['l']) / 100 * 38.2;
-                var_dump($thirtyEight);
                 if ($thirtyEight >= $candlestick['o']) return true;
                 return false;
             }
@@ -116,5 +112,44 @@
             if ($firstCand['h'] < $secondCand['c']) return true;
             return false;
         }
+
+        // Average Gain and Average Loss
+        // Return a two element array
+        // The first element is the average gain
+        // The second element is the average loss
+        static function getAverageGainAndLoss($array) {
+            $depth  = sizeof($array);
+            $gain   = 0;
+            $loss   = 0;
+            for ($i = 1; $i < sizeof($array); $i++) {
+                $curr = $array[$i];
+                $prev = $array[$i-1];
+                
+                if ($curr > $prev) $gain = abs($curr - $prev) + $gain;
+                else $loss = abs($curr - $prev) + $loss;
+            }
+            return [$gain / ($depth-1), $loss / ($depth-1)];
+        }
+
+        // Relative Strength
+        // return the ratio between average gain and average loss of a given period of time
+        static function getRS($array) {
+            $AGL = Math::getAverageGainAndLoss($array);
+            return $AGL[0] / $AGL[1];
+        }
+
+        // Relative Strength Index
+        // It is a momentum oscillator that measures the speed and change of price movements, it oscillates between 0 and 100.
+        // Traditionally the RSI is considered overbought when above 70 and oversold when below 30.
+        public static function getRSI($array) {
+            $depth = sizeof($array);
+
+            if ($depth-1 != 14) {
+                return 'Array not valid. The RSI is calculated with 20, 50 or 100 candlesticks';
+            } else {
+                $RSI = 100 - (100 / (1 + Math::getRS($array)));
+                return $RSI;
+            }
+        } 
     }
 ?>
