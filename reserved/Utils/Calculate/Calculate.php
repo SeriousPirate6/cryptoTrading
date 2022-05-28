@@ -143,13 +143,21 @@
         // Traditionally the RSI is considered overbought when above 70 and oversold when below 30.
         public static function getRSI($array) {
             $depth = sizeof($array);
+            if ($depth != 14 ^ $depth != 20 ^ $depth != 50 ^ $depth != 100)
+                return 'Array not valid. The RSI is calculated with 14, 20, 50 or 100 candlesticks';
+            $RSI = 100 - (100 / (1 + Math::getRS($array)));
+            return $RSI;
+        }
 
-            if ($depth-1 != 14) {
-                return 'Array not valid. The RSI is calculated with 20, 50 or 100 candlesticks';
-            } else {
-                $RSI = 100 - (100 / (1 + Math::getRS($array)));
-                return $RSI;
+        // Return Earn of different stacked coins and their relative A.P.Y.
+        public static function getEarn($array) {
+            $tot = 0;
+            foreach ($array as $ar) {
+                if (sizeof($ar) != 2) return 'Objects inside the main array must be two elements arrays';
+                $tot = $ar[0] * $ar[1] / 100 + $tot;
             }
-        } 
+            $calc_tot = [$tot, $tot / 12, $tot / 52];
+            return $calc_tot;
+        }
     }
 ?>

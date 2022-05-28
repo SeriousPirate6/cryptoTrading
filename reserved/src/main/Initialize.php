@@ -4,7 +4,7 @@
 
     // Singlerequest
     $method     = new GetMethods;
-    $methodImpl = $method->getCandlestick(CurrenciesList::DOT_USDT, m1, 15);
+    $methodImpl = $method->getCandlestick(CurrenciesList::BTC_USDT, m1, 15);
 
     $request    = SendRequest::sendReuquest($methodImpl);      
 
@@ -54,15 +54,30 @@
     ])];
 
     // $candles = [14.5, 18.45, 12.75, 15.35, 13.05, 16.10, 12.20, 11.65, 13.25, 15.30, 14.85, 16.15, 19.05, 21.45, 17.55];
-    TextFormatter::prettyPrint('SIZE: '.sizeof($candles));
-    TextFormatter::prettyPrint('Is 38.2: '.Math::isThirtyEight($arr));
-    TextFormatter::prettyPrint('Body candle: '.Math::getBodyCandle($arr));
-    TextFormatter::prettyPrint('Is engulfing: '.Math::isEngulfing($ar2));
+    // TextFormatter::prettyPrint('SIZE: '.sizeof($candles));
+    // TextFormatter::prettyPrint('Is 38.2: '.Math::isThirtyEight($arr));
+    // TextFormatter::prettyPrint('Body candle: '.Math::getBodyCandle($arr));
+    // TextFormatter::prettyPrint('Is engulfing: '.Math::isEngulfing($ar2));
 
+    // $closes = ExtractFromRequest::extractLastCandlesticks($closes, 21);
     $AVG = Math::getAverageGainAndLoss($closes);
 
     TextFormatter::prettyPrint('Gain: '.$AVG[0]);
     TextFormatter::prettyPrint('Loss: '.$AVG[1]);
     TextFormatter::prettyPrint('RS: '.Math::getRS($closes));
     TextFormatter::prettyPrint('RSI: '.Math::getRSI($closes));
+
+    // $earn = [
+    //     [148.6,     06],
+    //     [85,        06],
+    //     [131.7,     11],
+    //     [608.1,     03],
+    //     [396.63,    03],
+    //     [322.42,    03],
+    //     [106.43,    02],
+    // ];
+    
+    // TextFormatter::prettyPrint('Earn year:  '.Math::getEarn($earn)[0]);
+    // TextFormatter::prettyPrint('Earn month: '.Math::getEarn($earn)[1]);
+    // TextFormatter::prettyPrint('Earn week:  '.Math::getEarn($earn)[2]);
 ?>
