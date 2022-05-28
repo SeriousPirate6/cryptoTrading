@@ -1,4 +1,5 @@
 <?php
+  include '../../Variables/Styles.php';
   include '../../Utils/Formatter/Formatter.php';
   include '../../R8tGJrTSPY8QPDNTMe4n/8HqzMTXCvquYdkRNr6kn.php';
 

@@ -39,7 +39,9 @@
             
             $result = json_decode($result, true);
 
-            if ($print) TextFormatter::prettyPrint($result);
+            if ($print) {
+                TextFormatter::prettyPrint(TextFormatter::jsonReadableDate($result), $method->toString(), Colors::light_blue);
+            }
 
             return $result;
         }
