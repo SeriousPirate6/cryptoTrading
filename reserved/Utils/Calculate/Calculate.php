@@ -35,7 +35,7 @@
             } else {
                 $ATR = 0;
                 foreach ($candlestick as $candle) {
-                    $ATR = $ATR + $candle;
+                    $ATR = $ATR + $candle['c'];
                 }
                 return $ATR / $depth;
             }
@@ -53,7 +53,7 @@
             } else {
                 $MA = 0;
                 foreach ($candlestick as $candle) {
-                    $MA = $MA + $candle;
+                    $MA = $MA + $candle['c'];
                 }
                 return $MA / $depth;
             }
@@ -123,8 +123,8 @@
             $gain   = 0;
             $loss   = 0;
             for ($i = 1; $i < sizeof($array); $i++) {
-                $curr = $array[$i];
-                $prev = $array[$i-1];
+                $curr = $array[$i]['c'];
+                $prev = $array[$i-1]['c'];
                 
                 if ($curr > $prev) $gain = abs($curr - $prev) + $gain;
                 else $loss = abs($curr - $prev) + $loss;

@@ -4,7 +4,7 @@
 
     // Singlerequest
     $method     = new GetMethods;
-    $methodImpl = $method->getCandlestick(CurrenciesList::BTC_USDT, m1, 8);
+    $methodImpl = $method->getCandlestick(CurrenciesList::BTC_USDT, m1, 14);
 
     $request    = SendRequest::sendReuquest($methodImpl);      
 
@@ -15,15 +15,13 @@
     // RunQuery::select(selectFrom::currencyData());
     // RunQuery::select(selectFrom::currencyValue());
 
-    $candles = ExtractFromRequest::extractCandlesticks($request);
-    $closes = ExtractFromRequest::extractCloses($request);
+    $candles = ExtractFromRequest::candlesticksCollapsableTable($request);
+    $closes = ExtractFromRequest::closesCollapsableTable($request);
 
     TextFormatter::prettyPrint(Math::percentage(1.4397, 2.4502), 'PERCENTAGE: ', Colors::yellow);
     
     TextFormatter::prettyPrint(Math::getATR($closes), 'ATR: ', Colors::violet);
 
-    TextFormatter::prettyPrint($candles, 'CANDLES: ', Colors::blue);
-    TextFormatter::prettyPrint($closes, 'CLOSES: ', Colors::purple);
     TextFormatter::prettyPrint(Math::getMA($closes), 'MA: ', Colors::aqua);
 
     TextFormatter::prettyPrint(sizeof($candles), 'SIZE OF CANDLES: ');

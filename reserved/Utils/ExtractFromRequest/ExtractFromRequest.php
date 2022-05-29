@@ -1,12 +1,32 @@
 <?php
     class ExtractFromRequest {
-        public static function extractCandlesticks($request) {
+        private static function extractCandlesticks($request) {
             $array = array();
             $request = TextFormatter::jsonReadableDate($request);
             foreach($request['result']['data'] as $data) {
                 array_push($array, $data);
             }
             return $array;
+        }
+
+
+        public static function candlesticksCollapsableTable($request) {
+            $names   = array();
+            $request = ExtractFromRequest::extractCandlesticks($request);
+
+            $text = new TextFormatter('CANDLESTICKS');
+            
+            foreach($request[0] as $name => $value) {
+                array_push($names, $name);
+            }
+            
+            $text->addToPrint($names);
+            
+            foreach($request as $data) {
+                $text->addToPrint($data, Math::isGoingUp($data) ? 'green' : 'red');
+            }
+            $text->collapsablePrint($text->array);
+            return $text->array;
         }
 
         // To be used very carefully
@@ -25,9 +45,28 @@
             $candlestick = ExtractFromRequest::extractCandlesticks($request);
             $array = array();
             foreach($candlestick as $close) {
-                array_push($array, $close['c']);
+                array_push($array, (['t' => $close['t'], 'c' => $close['c']]));
             }
             return $array;
+        }
+
+        public static function closesCollapsableTable($request) {
+            $names   = array();
+            $request = ExtractFromRequest::extractCloses($request);
+
+            $text = new TextFormatter('CLOSES');
+            
+            foreach($request[0] as $name => $value) {
+                array_push($names, $name);
+            }
+            
+            $text->addToPrint($names);
+            
+            foreach($request as $data) {
+                $text->addToPrint($data);
+            }
+            $text->collapsablePrint($text->array);
+            return $request;
         }
     }
 ?>

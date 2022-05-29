@@ -5,10 +5,12 @@
 
         public $title;
         public $array;
+        public $colors;
 
         public function __construct($title) {
-            $this->title = $title;
-            $this->array = array();
+            $this->title    = $title;
+            $this->array    = array();
+            $this->colors   = array();
         }
         public static function prettyPrint($uglyText, $description = false, $color = false) {
             if ($description) echo '<h4 color='.$color.'>'.print_r($description, true).'</h4>';
@@ -31,11 +33,12 @@
             return $result;
         }
 
-        public function addToPrint($string){
+        public function addToPrint($string, $color = false) {
             array_push($this->array, $string);
+            array_push($this->colors, $color);
         }
 
-        public static function arrayToTable($array) {
+        public static function arrayToTable($array, $colors = false) {
             $table = '<table>';
             $count = 0;
             foreach ($array as $element) {
@@ -46,7 +49,7 @@
                     }
                     $table = $table.'</tr></thead><tbody>';
                 } else {
-                    $table = $table.'<tr><td class="count">'.$count.'</td>';
+                    $table = $table.'<tr style="background: '.$colors[$count].'"><td class="count">'.$count.'</td>';
                     foreach ($element as $e) {
                         $table = $table.'<td>'.$e.'</td>';
                     }
@@ -62,9 +65,9 @@
             if (sizeof($array) > 0) {
                 echo
                 '<body>
-                    <button type="button" class="collapsible">'.$this->title.'</button>
+                    <button type="button" class="collapsible"><h4>'.$this->title.'</h4></button>
                     <div class="content">
-                        '.TextFormatter::arrayToTable($array).'
+                        '.TextFormatter::arrayToTable($array, $this->colors).'
                     </div>
                     <script>
                         var coll = document.getElementsByClassName("collapsible");
