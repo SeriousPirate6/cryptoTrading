@@ -30,15 +30,15 @@
         public static function getATR($candlestick) {
             $depth = sizeof($candlestick);
 
-            if ($depth != 14) {
-                return 'Array not valid. The ATR is calculated with 14 candlesticks';
-            } else {
+            // if ($depth != 14) {
+            //     return 'Array not valid. The ATR is calculated with 14 candlesticks';
+            // } else {
                 $ATR = 0;
                 foreach ($candlestick as $candle) {
                     $ATR = $ATR + $candle['c'];
                 }
                 return $ATR / $depth;
-            }
+            // }
         }
 
         // Moving Average
@@ -48,15 +48,15 @@
             $depth = sizeof($candlestick);
             var_dump($depth);
 
-            if ($depth != 14 ^ $depth != 20 ^ $depth != 50 ^ $depth != 100) {
-                return 'Array not valid. The MA is calculated with 20, 50 or 100 candlesticks';
-            } else {
+            // if ($depth != 7 ^ $depth != 14 ^ $depth != 20 ^ $depth != 50 ^ $depth != 100) {
+            //     return 'Array not valid. The MA is calculated with 20, 50 or 100 candlesticks';
+            // } else {
                 $MA = 0;
                 foreach ($candlestick as $candle) {
                     $MA = $MA + $candle['c'];
                 }
                 return $MA / $depth;
-            }
+            // }
         }
 
         // 38.2% candlestick
@@ -130,7 +130,7 @@
                 else $loss = abs($curr - $prev) + $loss;
             }
             if ($depth < 2) return null;
-            return [$gain / ($depth-1), $loss / ($depth-1)];
+            return [$gain, $loss];
         }
 
         // Relative Strength
@@ -146,9 +146,10 @@
         // Traditionally the RSI is considered overbought when above 70 and oversold when below 30.
         public static function getRSI($array) {
             $depth = sizeof($array);
-            if ($depth != 14 ^ $depth != 20 ^ $depth != 50 ^ $depth != 100) {
-                return 'Array not valid. The RSI is calculated with 14, 20, 50 or 100 candlesticks';
-            }
+            var_dump($depth);
+            // if ($depth != 7 ^ $depth != 14 ^ $depth != 20 ^ $depth != 50 ^ $depth != 100) {
+            //     return 'Array not valid. The RSI is calculated with 14, 20, 50 or 100 candlesticks';
+            // }
             
             $RS = Math::getRS($array);
             if ($RS == null) return null;
@@ -159,17 +160,17 @@
 
         // Return Earn of different stacked coins and their relative A.P.Y.
         // $earn = [
-        //     [148.6,     06],
-        //     [85,        06],
-        //     [131.7,     11],
-        //     [608.1,     03],
-        //     [396.63,    03],
-        //     [322.42,    03],
-        //     [106.43,    02],
-        // ];
-        // TextFormatter::prettyPrint('Earn year:  '.Math::getEarn($earn)[0]);
-        // TextFormatter::prettyPrint('Earn month: '.Math::getEarn($earn)[1]);
-        // TextFormatter::prettyPrint('Earn week:  '.Math::getEarn($earn)[2]);
+            //     [148.6,     06],
+            //     [85,        06],
+            //     [131.7,     11],
+            //     [608.1,     03],
+            //     [396.63,    03],
+            //     [322.42,    03],
+            //     [106.43,    02],
+            // ];
+            // TextFormatter::prettyPrint('Earn year:  '.Math::getEarn($earn)[0]);
+            // TextFormatter::prettyPrint('Earn month: '.Math::getEarn($earn)[1]);
+            // TextFormatter::prettyPrint('Earn week:  '.Math::getEarn($earn)[2]);
         public static function getEarn($array) {
             $tot = 0;
             foreach ($array as $ar) {
@@ -178,6 +179,79 @@
             }
             $calc_tot = [$tot, $tot / 12, $tot / 52];
             return $calc_tot;
+        }
+
+
+
+
+
+
+
+
+
+
+
+        // TEST TEMPORARY FUNCTIONS
+
+
+        static function getAGLTEST($array) {
+            $depth  = sizeof($array);
+            $gain   = array();
+            $loss   = array();
+            $gl     = array();
+            $colors = array();
+            $n = new TextFormatter('GAIN AND LOSS');
+
+            array_push($gl, ['GAIN AND LOSS']);
+
+            $n->addToPrint($gl);
+            for ($i = 1; $i < $depth - 1; $i++) {
+                // $curr = $array[$i];
+                // $prev = $array[$i-1];
+                $curr = $array[$i]['c'];
+                $prev = $array[$i-1]['c'];
+                if ($curr > $prev) {
+                    array_push($gain, (abs($curr - $prev)));
+                    array_push($colors, 'green');
+                    $n->addToPrint(($curr - $prev), 'green');
+                }
+                else {
+                    array_push($loss, abs($curr - $prev));
+                    array_push($colors, 'red');
+                    $n->addToPrint(($curr - $prev), 'red');
+                }
+                array_push($gl, ([$i => ($curr - $prev)]));
+            }
+            // TextFormatter::prettyPrint($gain, 'GAIN: ', Colors::green);
+            // TextFormatter::prettyPrint($loss, 'LOSS: ', Colors::red);
+            TextFormatter::arrayToTable($gl, $colors);
+            $n->collapsablePrint($gl, $colors);
+            if ($depth < 2) return null;
+            TextFormatter::prettyPrint($depth, 'DEPTH: ');
+            $res = [array_sum($gain), array_sum($loss)];
+            TextFormatter::prettyPrint($res);
+            return $res;
+        }
+
+        // Relative Strength
+        // return the ratio between average gain and average loss of a given period of time
+        static function getRSTest($array) {
+            $AGL = Math::getAGLTEST($array);
+            if ($AGL == null) return null;
+            $res = $AGL[0] / $AGL[1];
+            TextFormatter::prettyPrint($res);
+            return $res;
+        }
+
+        public static function getRSITest($array) {
+            $depth = sizeof($array);
+            var_dump($depth);
+            
+            $RS = Math::getRSTest($array);
+            if ($RS == null) return null;
+            
+            $RSI = 100 - (100 / (1 + $RS));
+            return $RSI;
         }
     }
 ?>
