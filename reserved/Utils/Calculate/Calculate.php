@@ -158,6 +158,27 @@
             return $RSI;
         }
 
+        public static function getEMA($candle) {
+            $days       = sizeof($candle);
+            $EMAprev    = Math::getMA($candle);
+            $lastVal    = $candle[$days-1]['c'];
+            var_dump($candle[$days-1]['c']);
+
+            $smoothing  = 2 / (1 + $days);
+            $EMA        = ($lastVal * $smoothing) + ($EMAprev * (1 - $smoothing));
+            
+            return $EMA;
+        }
+
+        public static function getSMA($candles, $depth) {
+            return array_sum($candles) / $depth;
+        }
+
+        public static function getRMA($candles, $depth) {
+            $alpha   = 1 / $depth;
+            return $alpha * array_sum($candles) + (1 - $alpha) * Math::getSMA($candles, $depth);
+        }
+
         // Return Earn of different stacked coins and their relative A.P.Y.
         // $earn = [
             //     [148.6,     06],
@@ -248,6 +269,17 @@
             var_dump($depth);
             
             $RS = Math::getRSTest($array);
+            if ($RS == null) return null;
+            
+            $RSI = 100 - (100 / (1 + $RS));
+            return $RSI;
+        }
+
+        public static function getRSI_EMA($array) {
+            $depth = sizeof($array);
+            var_dump($depth);
+            
+            $RS = Math::getEMA($array);
             if ($RS == null) return null;
             
             $RSI = 100 - (100 / (1 + $RS));
