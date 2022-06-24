@@ -37,12 +37,4 @@ TextFormatter::prettyPrint(Math::getMA($closes), 'MA: ', Colors::aqua);
 
 $array = [30694.58, 30714.42, 30713.44, 30713.48, 30719.10, 30772.73, 30716.46, 30702.53];
 
-
-// TextFormatter::prettyPrint(Math::getRSI(($closes)), 'RSI SMA: ', Colors::yellow);
-// TextFormatter::prettyPrint(Math::getEMA(($closes)), 'EMA: ', Colors::aqua);
-// TextFormatter::prettyPrint(Math::getSMA(($closes)), 'SMA: ', Colors::yellow);
-
-// TextFormatter::prettyPrint(Math::getRMA(($closes), 21), 'RMA: ', Colors::purple);
 TextFormatter::prettyPrint(Math::getTradingViewRSI(($closes), 20), 'RSI: ', Colors::green);
-// TextFormatter::prettyPrint(Math::getRSITest(($closes)), 'RSI TEST: ', Colors::violet);
-// TextFormatter::prettyPrint(Math::getRSI(($closes)), 'RSI: ', Colors::violet);
