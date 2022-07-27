@@ -1,37 +1,12 @@
 <?php
 class Math {
-    // Percentage
-    // Return the gain or loss percentage between two given values
-    public static function percentage($n1, $n2) {
-        return round(($n2 * 100 / $n1 - 100), 2, PHP_ROUND_HALF_EVEN);
-    }
-
-    // IsGoingUp
-    // Check if the candlestick is red or green
-    // True: the candlestick is green
-    // False: the candlestick is red
-    public static function isGoingUp($candlestick) {
-        if ($candlestick['c'] > $candlestick['o']) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // GetBodyCandle
-    // Return the absolute difference between the open and the close of a candlestick
-    public static function getBodyCandle($candlestick) {
-        if (Math::isGoingUp($candlestick)) return $candlestick['c'] - $candlestick['o'];
-        return $candlestick['o'] - $candlestick['c'];
-    }
-
     // Average True Range
     // Average of the last 14 candlesticks
-    public static function getATR($candlestick) {
+    private static function getATR($candlestick) {
         $depth = sizeof($candlestick);
 
         // if ($depth != 14) {
-        //     return 'Array not valid. The ATR is calculated with 14 candlesticks';
+        // return 'Array not valid. The ATR is calculated with 14 candlesticks';
         // } else {
         $ATR = 0;
         foreach ($candlestick as $candle) {
@@ -44,12 +19,12 @@ class Math {
     // Moving Average
     // Take the n candlestick closing price and get the average
     // Most used are last 20, 50 or 100 candlestick
-    public static function getMA($candlestick) {
+    private static function getMA($candlestick) {
         $depth = sizeof($candlestick);
         var_dump($depth);
 
         // if ($depth != 7 ^ $depth != 14 ^ $depth != 20 ^ $depth != 50 ^ $depth != 100) {
-        //     return 'Array not valid. The MA is calculated with 20, 50 or 100 candlesticks';
+        // return 'Array not valid. The MA is calculated with 20, 50 or 100 candlesticks';
         // } else {
         $MA = 0;
         foreach ($candlestick as $candle) {
@@ -57,61 +32,6 @@ class Math {
         }
         return $MA / $depth;
         // }
-    }
-
-    // 38.2% candlestick
-    // Check if the close of a candlestick is above the 38.2% of the body of the candlestick itself. 
-    public static function isThirtyEight($candlestick) {
-        if (Math::isGoingUp($candlestick)) {
-            $thirtyEight = $candlestick['h'] - (($candlestick['h'] - $candlestick['l']) / 100 * 38.2);
-            if ($thirtyEight <= $candlestick['o']) return true;
-            return false;
-        } else {
-            $thirtyEight = ($candlestick['h'] - $candlestick['l']) / 100 * 38.2;
-            if ($thirtyEight >= $candlestick['o']) return true;
-            return false;
-        }
-    }
-
-    // Engulfing Candle
-    // Return true if between two given candles, the second's body is greater than the first, and the trend is reversed
-    public static function isEngulfing($array) {
-        if (sizeof($array) != 2) {
-            return 'Array must contains two candles to execute the function';
-        }
-        $firstCand  = $array[0];
-        $secondCand = $array[1];
-        if (Math::isGoingUp($firstCand) != Math::isGoingUp($secondCand)) {
-            if (Math::getBodyCandle($firstCand) <= Math::getBodyCandle($secondCand)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Close Below Candle
-    // Return true if between two given candles, the close of the second is lower than the top low of the first
-    public static function isCloseBelow($array) {
-        if (sizeof($array) != 2) {
-            return 'Array must contains two candles to execute the function';
-        }
-        $firstCand  = $array[0];
-        $secondCand = $array[1];
-        if ($firstCand['l'] > $secondCand['c']) return true;
-        return false;
-    }
-
-    // Close Below Candle
-    // Return true if between two given candles, the close of the second is lower than the top low of the first
-    // TO BE REVISIONED
-    public static function isCloseAbove($array) {
-        if (sizeof($array) != 2) {
-            return 'Array must contains two candles to execute the function';
-        }
-        $firstCand  = $array[0];
-        $secondCand = $array[1];
-        if ($firstCand['h'] < $secondCand['c']) return true;
-        return false;
     }
 
     // Average Gain and Average Loss
@@ -122,7 +42,11 @@ class Math {
         $depth  = sizeof($array);
         $gain   = array();
         $loss   = array();
-        for ($i = 1; $i < sizeof($array); $i++) {
+        for (
+            $i = 1;
+            $i < sizeof($array);
+            $i++
+        ) {
             $curr = $array[$i]['c'];
             $prev = $array[$i - 1]['c'];
 
@@ -149,7 +73,7 @@ class Math {
     // Relative Strength Index
     // It is a momentum oscillator that measures the speed and change of price movements, it oscillates between 0 and 100.
     // Traditionally the RSI is considered overbought when above 70 and oversold when below 30.
-    public static function getRSI($array) {
+    private static function getRSI($array) {
         $depth = sizeof($array);
         var_dump($depth);
         // if ($depth != 7 ^ $depth != 14 ^ $depth != 20 ^ $depth != 50 ^ $depth != 100) {
@@ -163,7 +87,7 @@ class Math {
         return $RSI;
     }
 
-    public static function getEMA($candle) {
+    private static function getEMA($candle) {
         $days       = sizeof($candle);
         $EMAprev    = Math::getMA($candle);
         $lastVal    = $candle[$days - 1]['c'];
@@ -177,7 +101,7 @@ class Math {
 
     // getSMA
     // Returns the Simple Moving Average of a set of candlestick.
-    public static function getSMA($candles) {
+    private static function getSMA($candles) {
         $depth = sizeof($candles);
         $sum = 0;
         foreach ($candles as $c) {
@@ -189,7 +113,7 @@ class Math {
     // getRMA
     // Returns the Relative Moving Average of a set of candlestick.
     // It refers to TradingView function write in Pinescript.
-    public static function getRMA($candles, $depth) {
+    private static function getRMA($candles, $depth) {
         $sum    = array();
         $alpha  = 1 / $depth;
         // TextFormatter::prettyPrint($candles);
@@ -201,7 +125,7 @@ class Math {
         return $sum;
     }
 
-    public static function getTradingViewRSI($candles, $depth) {
+    private static function getTradingViewRSI($candles, $depth) {
         $RSI    = array();
         $up     = Math::getAverageGainAndLoss($candles)[0];
         $down   = Math::getAverageGainAndLoss($candles)[1];
@@ -210,7 +134,11 @@ class Math {
         TextFormatter::prettyPrint($down, 'DOWN', Colors::green);
 
         TextFormatter::prettyPrint(Math::getRMA($up, $depth), 'RMA UP', Colors::yellow);
-        TextFormatter::prettyPrint(Math::getRMA($down, $depth), 'RMA DOWN', Colors::purple);
+        TextFormatter::prettyPrint(
+            Math::getRMA($down, $depth),
+            'RMA DOWN',
+            Colors::purple
+        );
         $RM_up      = array_sum(Math::getRMA($up, $depth - 1));
         $RM_down    = array_sum(Math::getRMA($down, $depth - 1));
 
@@ -232,7 +160,7 @@ class Math {
     // TextFormatter::prettyPrint('Earn year:  '.Math::getEarn($earn)[0]);
     // TextFormatter::prettyPrint('Earn month: '.Math::getEarn($earn)[1]);
     // TextFormatter::prettyPrint('Earn week:  '.Math::getEarn($earn)[2]);
-    public static function getEarn($array) {
+    private static function getEarn($array) {
         $tot = 0;
         foreach ($array as $ar) {
             if (sizeof($ar) != 2) return 'Objects inside the main array must be two elements arrays';

@@ -1,8 +1,12 @@
 <?php
 
-use TestTa as ta;
+use TechnicalAnalysis as ta;
 
-class TestTa {
+class TechnicalAnalysis {
+    /*
+    * JSON to Array
+    * It estracts an array from the JSON response returned by the API call.
+    */
     public static function jsonToArray($json) {
         $array = array(sizeof($json));
         for ($i = 0; $i < sizeof($json); $i++) {
@@ -11,6 +15,11 @@ class TestTa {
         return $array;
     }
 
+    /*
+    * Gain & Losses
+    * It returns a two elements array
+    * The first element is the sum of the gains, the second one of the losses
+    */
     public static function gainAndLoss($array) {
         $u = array();
         $d = array();
@@ -21,25 +30,32 @@ class TestTa {
         return [array_sum($u), array_sum($d)];
     }
 
+    /*
+    * Moving Average
+    * It returns the average value of the given array, by the given period.
+    */
     public static function ma($real, $length) {
         return $real / $length;
     }
 
+    /*
+    * Relative Strength
+    * It calculates the average gain and the average losses of the given array and the given period.
+    * It returns the ratio between the average gain and the average losses
+    */
     public static function rs($array, $length) {
         $avgGain = ta::ma(ta::gainAndLoss($array)[0], $length);
         $avgLoss = ta::ma(ta::gainAndLoss($array)[1], $length);
         return $avgGain / $avgLoss;
     }
 
+    /*
+    * Relative Strength Index
+    * It calculates the RS of the given array and the given period.
+    * It returns the RSI based on the calculated RS
+    */
     public static function rsi($array, $length) {
         $rs = ta::rs($array, $length);
         return 100 - (100 / (1 + $rs));
     }
 }
-
-$array = [0.12475, 0.12465, 0.12470, 0.12440, 0.12435, 0.12435, 0.12435, 0.12435, 0.12445, 0.12450, 0.12435];
-
-// TextFormatter::prettyPrint(ta::rsi($array, $length), "RSI Test: ", Colors::aqua);
-// TextFormatter::prettyPrint($array, "", Colors::light_blue);
-
-$array = array_reverse($array);
