@@ -1,13 +1,6 @@
 <?php
 
-include 'reserved/Utils/Formatter/Formatter.php';
-include 'reserved/Variables/Styles.php';
-
 use TechnicalAnalysis as ta;
-
-$array = [7.937, 7.927, 7.916, 7.915, 7.925, 7.924, 7.917, 7.923, 7.929, 7.927, 7.955, 7.955, 7.963, 7.974];
-
-$array = array_reverse($array);
 
 class TechnicalAnalysis {
 
@@ -16,8 +9,9 @@ class TechnicalAnalysis {
      */
     public static function SMA($x, $y) {
         $sum = 0;
-        for ($i = 0; $i < $y; $i++) {
-            $sum += $x[$i];
+
+        for ($i = sizeof($x) - $y; $i < sizeof($x); $i++) {
+            $sum += $x[$i]['c'];
         }
         return $sum / $y;
     }
@@ -28,11 +22,11 @@ class TechnicalAnalysis {
     public static function RMA($src, $lenght) {
         $alpha  = 1 / $lenght;
         $sum    = array();
-        for ($i = 0; $i < $lenght; $i++) {
+        for ($i = sizeof($src) - $lenght + 1; $i <= sizeof($src); $i++) {
             if ($sum[$i - 1]) array_push($sum, ta::SMA($src, $lenght));
-            else array_push($sum, $alpha * $src[$i - 1] + (1 - $alpha) * $sum[$i - 1]);
+            else array_push($sum, $alpha * $src[$i - 1]['c'] + (1 - $alpha) * $sum[$i - 1]);
         }
-        return $sum;
+        return array_sum($sum);
     }
 
     /**
@@ -44,27 +38,47 @@ class TechnicalAnalysis {
         $rma_u  = array();
         $rma_d  = array();
         $rs     = 0;
-        $rsi    = 0;
+        $rsi    = array();
 
-        for ($i = 1; $i < $y; $i++) {
-            array_push($u, max($x[$i] - $x[$i - 1], 0));
-            array_push($d, max($x[$i - 1] - $x[$i], 0));
+        for ($i = 0; $i < $y; $i++) {
+            var_dump($x[$i]['c']);
         }
 
-        $rma_u = ta::RMA($u, $y);
-        $rma_d = ta::RMA($d, $y);
+        for ($i = sizeof($x) - $y + 1; $i < sizeof($x); $i++) {
+            array_push($u, max($x[$i]['c'] - $x[$i - 1]['c'], 0));
+            array_push($d, max($x[$i - 1]['c'] - $x[$i]['c'], 0));
+            // TextFormatter::prettyPrint($u, 'RMA_UP: ');
+            // TextFormatter::prettyPrint($d, 'RMA_DOWN: ');
+        }
 
-        TextFormatter::prettyPrint($rma_u, 'RMA_UP: ');
-        TextFormatter::prettyPrint($rma_d, 'RMA_DOWN: ');
+        $rs     = ta::RMA($u, $y) / ta::RMA($d, $y);
+        array_push($rsi, 100 - 100 / (1 + $rs));
 
-        $rs     = $rma_u[sizeof($rma_u) - 1] / $rma_d[sizeof($rma_d) - 1];
-        $rsi    = 100 - 100 / (1 + $rs);
+
 
         return $rsi;
     }
+
+    static function getRSI($x, $y) {
+        $u = array();
+        $d = array();
+
+        for ($i = sizeof($x) - $y + 1; $i < sizeof($x); $i++) {
+            array_push($u, max($x[$i]['c'] - $x[$i - 1]['c'], 0));
+            array_push($d, max($x[$i - 1]['c'] - $x[$i]['c'], 0));
+        }
+
+        return (100 - 100 / (1 + array_sum($u) / array_sum($d)));
+    }
 }
 
-TextFormatter::prettyPrint($array, 'DATA: ');
-TextFormatter::prettyPrint(ta::SMA($array, 10), 'SMA: ', Colors::aqua);
-TextFormatter::prettyPrint(ta::RMA($array, sizeof($array)), 'RMA: ', Colors::purple);
-TextFormatter::prettyPrint(ta::RSI($array, sizeof($array)), 'RSI: ', Colors::yellow);
+$array = [0.12475, 0.12465, 0.12470, 0.12440, 0.12435, 0.12435, 0.12435, 0.12435, 0.12445, 0.12450, 0.12435];
+
+$array = array_reverse($array);
+
+// TextFormatter::prettyPrint($array, 'DATA: ');
+// TextFormatter::prettyPrint(ta::SMA($array, 10), 'SMA: ', Colors::aqua);
+// TextFormatter::prettyPrint(ta::RMA($array, 10), 'RMA: ', Colors::purple);
+// TextFormatter::prettyPrint(ta::RSI($array, 10), 'RSI: ', Colors::yellow);
+
+// TextFormatter::prettyPrint(ta::getRSI($array, 10), 'RSI: ', Colors::red);
