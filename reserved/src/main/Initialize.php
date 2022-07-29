@@ -34,25 +34,9 @@ $array = [30694.58, 30714.42, 30713.44, 30713.48, 30719.10, 30772.73, 30716.46, 
 
 $closes = ExtractFromRequest::closesToArray($closes);
 
-$bool = false;
+echo TextFormatter::switchButton(1);
 
-if ($bool) {
-    $seconds = 10;
-    echo "<h1>DYNAMIC " . $seconds . " S</h1>";
-    echo "<html>
-    <head>
-    <meta http-equiv=\"refresh\" content=\"" . $seconds . "\">"
-        .
-        TextFormatter::prettyPrint(TradingView::rsi($closes, 20), 'RSI RMA: ', Colors::purple) .
-        TextFormatter::prettyPrint(TradingView::sma($closes, 20), 'SMA: ', Colors::yellow) .
-        TextFormatter::prettyPrint(TradingView::rma($closes, 20), 'RMA: ', Colors::violet) .
-        TextFormatter::prettyPrint(TradingView::atr($candles, 20), 'ATR: ', Colors::orange) .
-        "</head>
-    <body>";
-} else {
-    echo "<h1>STATIC</h1>";
-    TextFormatter::prettyPrint(TradingView::rsi($closes, 20), 'RSI RMA: ', Colors::purple);
-    TextFormatter::prettyPrint(TradingView::sma($closes, 20), 'SMA: ', Colors::yellow);
-    TextFormatter::prettyPrint(TradingView::rma($closes, 20), 'RMA: ', Colors::violet);
-    TextFormatter::prettyPrint(TradingView::atr($candles, 20), 'ATR: ', Colors::orange);
-}
+TextFormatter::prettyPrint(TradingView::rsi($closes, 20), 'RSI RMA: ', Colors::purple);
+TextFormatter::prettyPrint(TradingView::sma($closes, 20), 'SMA: ', Colors::yellow);
+TextFormatter::prettyPrint(TradingView::rma($closes, 20), 'RMA: ', Colors::violet);
+TextFormatter::prettyPrint(TradingView::atr($candles, 20), 'ATR: ', Colors::orange);
