@@ -2,7 +2,6 @@
 include '../../Services/Templates/Templates.php';
 include '../../Utils/Trading/Formulas.php';
 include '../../Utils/Trading/Indicators.php';
-include '../../Utils/Trading/TradingView.php';
 
 // Singlerequest
 $method     = new GetMethods;
@@ -33,14 +32,27 @@ $closes = ExtractFromRequest::closesCollapsableTable($request);
 
 $array = [30694.58, 30714.42, 30713.44, 30713.48, 30719.10, 30772.73, 30716.46, 30702.53];
 
-$closes = TradingView::jsonToArray($closes);
+$closes = ExtractFromRequest::closesToArray($closes);
 
-TextFormatter::prettyPrint(TradingView::rsi($closes, 14), 'RSI: ', Colors::green);
+$bool = false;
 
-echo "<html>
-<head>
-  <meta http-equiv=\"refresh\" content=\"10\">"
-    .
-    TextFormatter::prettyPrint(TechnicalAnalysis::rsi($closes, 14), 'RSI: ', Colors::green) .
-    "</head>
-<body>";
+if ($bool) {
+    $seconds = 10;
+    echo "<h1>DYNAMIC " . $seconds . " S</h1>";
+    echo "<html>
+    <head>
+    <meta http-equiv=\"refresh\" content=\"" . $seconds . "\">"
+        .
+        TextFormatter::prettyPrint(TradingView::rsi($closes, 20), 'RSI RMA: ', Colors::purple) .
+        TextFormatter::prettyPrint(TradingView::sma($closes, 20), 'SMA: ', Colors::yellow) .
+        TextFormatter::prettyPrint(TradingView::rma($closes, 20), 'RMA: ', Colors::violet) .
+        TextFormatter::prettyPrint(TradingView::atr($candles, 20), 'ATR: ', Colors::orange) .
+        "</head>
+    <body>";
+} else {
+    echo "<h1>STATIC</h1>";
+    TextFormatter::prettyPrint(TradingView::rsi($closes, 20), 'RSI RMA: ', Colors::purple);
+    TextFormatter::prettyPrint(TradingView::sma($closes, 20), 'SMA: ', Colors::yellow);
+    TextFormatter::prettyPrint(TradingView::rma($closes, 20), 'RMA: ', Colors::violet);
+    TextFormatter::prettyPrint(TradingView::atr($candles, 20), 'ATR: ', Colors::orange);
+}
