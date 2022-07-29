@@ -2,6 +2,7 @@
 include '../../Services/Templates/Templates.php';
 include '../../Utils/Trading/Formulas.php';
 include '../../Utils/Trading/Indicators.php';
+include '../../Utils/Trading/TradingView.php';
 
 // Singlerequest
 $method     = new GetMethods;
@@ -32,6 +33,14 @@ $closes = ExtractFromRequest::closesCollapsableTable($request);
 
 $array = [30694.58, 30714.42, 30713.44, 30713.48, 30719.10, 30772.73, 30716.46, 30702.53];
 
-$closes = TechnicalAnalysis::jsonToArray($closes);
+$closes = TradingView::jsonToArray($closes);
 
-TextFormatter::prettyPrint(TechnicalAnalysis::rsi($closes, 14), 'RSI: ', Colors::green);
+TextFormatter::prettyPrint(TradingView::rsi($closes, 14), 'RSI: ', Colors::green);
+
+echo "<html>
+<head>
+  <meta http-equiv=\"refresh\" content=\"10\">"
+    .
+    TextFormatter::prettyPrint(TechnicalAnalysis::rsi($closes, 14), 'RSI: ', Colors::green) .
+    "</head>
+<body>";
