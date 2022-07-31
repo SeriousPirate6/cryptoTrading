@@ -102,7 +102,8 @@ class TextFormatter {
             </label>
 
             <script>
-
+                var bool = false;
+                
                 function App() {}
 
                 App.prototype.setState = function(state) {
@@ -134,6 +135,7 @@ class TextFormatter {
                 init();
 
                 function foo () {
+                    if (bool) return;
                     console.log(\"RUNNING\");
                     location.reload();
                 }
@@ -148,10 +150,91 @@ class TextFormatter {
                             console.log('Checked');
                         } else {
                         document.getElementById(\"demo\").innerHTML = \"STATIC\";
+                            bool = true;
+                            console.log(bool);
                             console.log('Not checked');
                         }
                     });
                 });
             </script>";
+    }
+
+    private static function getListElements($list) {
+        $droplist = '';
+        for ($i = 0; $i < sizeof($list); $i++) {
+            $droplist .= '<a href="#" onclick="list(\'' . $list[$i] . '\');">' . $list[$i] . '</a>';
+        }
+        echo '<script>
+                function App() {}
+                App.prototype.setState = function(state) {
+                    localStorage.setItem(\'listItem\', state);
+                }
+
+                App.prototype.getState = function() {
+                    return localStorage.getItem(\'listItem\');
+                }
+
+                var app = new App();
+                var state = app.getState();
+
+                function list(element) {
+                    app.setState(element);
+                    document.getElementById("dropd").innerHTML = element;
+                    location.reload();
+                }
+            </script>';
+        return $droplist;
+    }
+
+    public static function dropdown($list) {
+        return '<div class="dropdown">
+                    <button onclick="myFunction()" class="dropbtn" id="dropd">
+                        <script>
+                            document.getElementById("dropd").innerHTML = state;
+                        </script>
+                    </button>
+                    <div id="myDropdown" class="dropdown-content">
+                        ' . TextFormatter::getListElements($list) . '
+                    </div>
+                    </div>
+
+                    <script>
+                        function myFunction() {
+                            document.getElementById("myDropdown").classList.toggle("show");
+                        }
+
+                        window.onclick = function(event) {
+                            if (!event.target.matches(\'.dropbtn\')) {
+                                var dropdowns = document.getElementsByClassName("dropdown-content");
+                                var i;
+                                for (i = 0; i < dropdowns.length; i++) {
+                                    var openDropdown = dropdowns[i];
+                                    if (openDropdown.classList.contains(\'show\')) {
+                                        openDropdown.classList.remove(\'show\');
+                                    }
+                                }
+                            }
+                        }
+                        $(document).ready(function () { 
+                            createCookie("gfg", state, "10"); 
+                        }); 
+
+                        // Function to create the cookie 
+                        function createCookie(name, value, days) { 
+                            var expires; 
+                            
+                            if (days) { 
+                                var date = new Date(); 
+                                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); 
+                                expires = "; expires=" + date.toGMTString(); 
+                            } 
+                            else { 
+                                expires = ""; 
+                            } 
+                            
+                            document.cookie = escape(name) + "=" + 
+                                escape(value) + expires + "; path=/"; 
+                        }
+                    </script>';
     }
 }

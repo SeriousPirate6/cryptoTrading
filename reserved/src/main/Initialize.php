@@ -3,9 +3,14 @@ include '../../Services/Templates/Templates.php';
 include '../../Utils/Trading/Formulas.php';
 include '../../Utils/Trading/Indicators.php';
 
+echo TextFormatter::dropdown(CurrenciesList::getOptionsAsList());
+
 // Singlerequest
 $method     = new GetMethods;
-$methodImpl = $method->getCandlestick(CurrenciesList::BTC_USDT, '1m', 60);
+// catch variable from PHP -> it was extremely difficult to find
+// $curr = "<script>document.writeln(state);</script>";
+$curr = $_COOKIE["gfg"];
+$methodImpl = $method->getCandlestick($curr, '1m', 60);
 
 $request    = SendRequest::sendReuquest($methodImpl);
 
@@ -34,7 +39,7 @@ $array = [30694.58, 30714.42, 30713.44, 30713.48, 30719.10, 30772.73, 30716.46, 
 
 $closes = ExtractFromRequest::closesToArray($closes);
 
-echo TextFormatter::switchButton(1);
+echo TextFormatter::switchButton(5);
 
 TextFormatter::prettyPrint(TradingView::rsi($closes, 20), 'RSI RMA: ', Colors::purple);
 TextFormatter::prettyPrint(TradingView::sma($closes, 20), 'SMA: ', Colors::yellow);
