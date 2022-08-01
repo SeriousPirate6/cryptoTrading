@@ -162,7 +162,7 @@ class TextFormatter {
     private static function getListElements($list) {
         $droplist = '';
         for ($i = 0; $i < sizeof($list); $i++) {
-            $droplist .= '<a href="#" onclick="list(\'' . $list[$i] . '\');">' . $list[$i] . '</a>';
+            $droplist .= '<a onclick="list(\'' . $list[$i] . '\');">' . $list[$i] . '</a>';
         }
         echo '<script>
                 function App() {}
@@ -170,16 +170,28 @@ class TextFormatter {
                     localStorage.setItem(\'listItem\', state);
                 }
 
+                App.prototype.setLoad = function(load) {
+                    localStorage.setItem(\'isLoaded\', load);
+                }
+
                 App.prototype.getState = function() {
                     return localStorage.getItem(\'listItem\');
+                }
+
+                App.prototype.getLoad = function() {
+                    return localStorage.getItem(\'isLoaded\');
                 }
 
                 var app = new App();
                 var state = app.getState();
 
+                var load = app.getLoad();
+
                 function list(element) {
                     app.setState(element);
                     document.getElementById("dropd").innerHTML = element;
+                    app.setLoad(false);
+                    console.log(app.getLoad());
                     location.reload();
                 }
             </script>';
@@ -234,6 +246,17 @@ class TextFormatter {
                             
                             document.cookie = escape(name) + "=" + 
                                 escape(value) + expires + "; path=/"; 
+                        }
+
+                        if(load === "false") {
+                            app.setLoad(true);
+                            console.log("NOT LOADED");
+                            setInterval(rld, 500);
+                        }
+
+                        function rld() {
+                            console.log("SECOND REFRESH...");
+                            location.reload();
                         }
                     </script>';
     }

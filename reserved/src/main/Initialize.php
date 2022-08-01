@@ -41,7 +41,9 @@ $closes = ExtractFromRequest::closesToArray($closes);
 
 echo TextFormatter::switchButton(5);
 
-TextFormatter::prettyPrint(TradingView::rsi($closes, 20), 'RSI RMA: ', Colors::purple);
-TextFormatter::prettyPrint(TradingView::sma($closes, 20), 'SMA: ', Colors::yellow);
-TextFormatter::prettyPrint(TradingView::rma($closes, 20), 'RMA: ', Colors::violet);
-TextFormatter::prettyPrint(TradingView::atr($candles, 20), 'ATR: ', Colors::orange);
+$period = 20;
+
+TextFormatter::prettyPrint(TradingView::rsi($closes, $period), 'RSI RMA: ', Colors::purple);
+TextFormatter::prettyPrint(TradingView::sma($closes, $period), 'SMA: ', Colors::yellow);
+TextFormatter::prettyPrint(TradingView::rma($closes, $period), 'RMA: ', Colors::violet);
+TextFormatter::prettyPrint(TradingView::atr($candles, $period), 'ATR: ', Colors::orange);
