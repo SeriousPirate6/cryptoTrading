@@ -26,10 +26,6 @@ $closes = ExtractFromRequest::closesCollapsableTable($request);
 
 // TextFormatter::prettyPrint(Math::percentage(1.4397, 2.4502), 'PERCENTAGE: ', Colors::yellow);
 
-// TextFormatter::prettyPrint(Math::getATR($closes), 'ATR: ', Colors::violet);
-
-// TextFormatter::prettyPrint(Math::getMA($closes), 'MA: ', Colors::aqua);
-
 // TextFormatter::prettyPrint(sizeof($candles), 'SIZE OF CANDLES: ');
 // TextFormatter::prettyPrint(Math::isThirtyEight($candles[0]), '38,2%', Colors::aqua);
 // TextFormatter::prettyPrint(Math::getBodyCandle($candles[0]), 'BODY CANDLE: ', Colors::yellow);

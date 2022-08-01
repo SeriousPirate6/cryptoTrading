@@ -34,7 +34,7 @@ class ExtractFromRequest {
         $names   = array();
         $request = ExtractFromRequest::extractCandlesticks($request);
 
-        $text = new TextFormatter('CANDLESTICKS');
+        $text = new CollapsibleTable('CANDLESTICKS');
 
         foreach ($request[0] as $name => $value) {
             array_push($names, $name);
@@ -82,7 +82,7 @@ class ExtractFromRequest {
         $names   = array();
         $request = ExtractFromRequest::extractCloses($request);
 
-        $text = new TextFormatter('CLOSES');
+        $text = new CollapsibleTable('CLOSES');
 
         foreach ($request[0] as $name => $value) {
             array_push($names, $name);
