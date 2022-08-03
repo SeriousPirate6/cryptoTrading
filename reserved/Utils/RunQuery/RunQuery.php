@@ -36,12 +36,25 @@ abstract class RunQuery {
         $conn->close();
     }
 
-    public static function select($query, $print = false) {
+    public static function drop($query, $print = false) {
         global $conn;
         $conn = Database::connect();
 
         if ($print) TextFormatter::prettyPrint($query);
         else TextFormatter::prettyPrint($query->sqlCommand);
+
+        if ($conn->query($query->sqlCommand) === FALSE) {
+            TextFormatter::prettyPrint('Error entering data: ' . $conn->error);
+        }
+        $conn->close();
+    }
+
+    public static function select($query, $table = false, $print = false) {
+        global $conn;
+        $conn = Database::connect();
+
+        if ($print) TextFormatter::prettyPrint($query);
+        if ($table) TextFormatter::prettyPrint($query->sqlCommand);
 
         $result = $conn->query($query->sqlCommand);
 
@@ -54,25 +67,23 @@ abstract class RunQuery {
 
         if ($result->num_rows > 0) {
             $text = new CollapsibleTable($query->type . ', ' . $query->tableName . ', ' . $result->num_rows . ' records, ' . $result->field_count . ' fields');
-            if (!$print) {
-                foreach ($query->queryParams as $val) {
-                    array_push($vals, $val->name);
-                }
-                $text->addToPrint($vals);
-                $vals = array();
+            foreach ($query->queryParams as $val) {
+                array_push($vals, $val->name);
             }
+            $text->addToPrint($vals);
+            $vals = array();
             while ($row = $result->fetch_assoc()) {
                 if ($print) TextFormatter::prettyPrint($query);
-                else {
-                    foreach ($query->queryParams as $val) {
-                        array_push($vals, $row[$val->name]);
-                    }
-                    $text->addToPrint($vals);
-                    $query->addValue($vals);
-                    $vals = array();
+                foreach ($query->queryParams as $val) {
+                    array_push($vals, $row[$val->name]);
                 }
+                $text->addToPrint($vals);
+                $query->addValue($vals);
+                $vals = array();
             }
-            $text->collapsablePrint($text->array);
+            if ($table) $text->collapsablePrint($text->array);
+            array_shift($text->array);
+            return $text->array;
         } else {
             echo "0 results";
         }

@@ -18,8 +18,8 @@ $request    = SendRequest::sendReuquest($methodImpl);
 
 // // // Templates::currencyData();
 
-// RunQuery::select(selectFrom::currencyData());
-// RunQuery::select(selectFrom::currencyValue());
+// RunQuery::select(SelectFrom::currencyData());
+// RunQuery::select(SelectFrom::currencyValue());
 
 $candles = ExtractFromRequest::candlesticksCollapsableTable($request);
 $closes = ExtractFromRequest::closesCollapsableTable($request);
