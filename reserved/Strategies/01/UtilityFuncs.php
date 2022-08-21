@@ -6,14 +6,16 @@ class UtilityStrat01 {
         RunQuery::create($createCurrData);
     }
 
-    public static function insertTable($qnt1, $qnt2, $price) {
-        $insertCurrData     = InsertTable::testStrategy($qnt1, $qnt2, $price);
+    public static function insertTable($qnt1, $qnt2, $price, $action) {
+        $insertCurrData     = InsertTable::testStrategy($qnt1, $qnt2, $price, $action);
         RunQuery::insert($insertCurrData);
     }
 
     public static function selectLast($table = false) {
         $selectCurrData = SelectFrom::testStrategy();
-        return end(RunQuery::select($selectCurrData, $table));
+        $rows = RunQuery::select($selectCurrData, $table);
+        $lastRow = $rows ? end($rows) : null;
+        return $lastRow;
     }
 
     public static function dropTable() {
@@ -45,5 +47,14 @@ class UtilityStrat01 {
     public static function isQnt2Enough($qnt) {
         if (UtilityStrat01::selectLast()[2] >= $qnt) return true;
         return false;
+    }
+
+    public static function calcPercentage($qnt, $price1, $price2) {
+        $ratio = $price2 / $price1;
+        return $qnt * $ratio;
+    }
+
+    public static function getPercentageOf($perc, $tot) {
+        return $tot / 100 * $perc;
     }
 }

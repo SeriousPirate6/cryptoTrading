@@ -45,13 +45,14 @@ class CreateTable {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['testStrategy'],
+            $constants['Tables']['testStrategy01'],
             CREATE
         );
         $instance->query->addParam('ID',        'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
         $instance->query->addParam('QNT1',      'FLOAT',        30, 'NOT NULL');
         $instance->query->addParam('QNT2',      'FLOAT',        30, 'NOT NULL');
         $instance->query->addParam('PRICE',     'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('ACTION',    'VARCHAR',      10);
         $instance->query->addParam('TIMEST',    'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
@@ -91,16 +92,17 @@ class InsertTable {
         return $instance->query;
     }
 
-    public static function testStrategy($qnt1, $qnt2, $price) {
+    public static function testStrategy($qnt1, $qnt2, $price, $action) {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['testStrategy'],
+            $constants['Tables']['testStrategy01'],
             INSERT
         );
         $instance->query->addParam('QNT1',      'FLOAT',        30, $qnt1);
         $instance->query->addParam('QNT2',      'FLOAT',        30, $qnt2);
         $instance->query->addParam('PRICE',     'FLOAT',        30, $price);
+        $instance->query->addParam('ACTION',    'VARCHAR',      10, $action);
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -143,13 +145,14 @@ class SelectFrom {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['testStrategy'],
+            $constants['Tables']['testStrategy01'],
             SELECT
         );
         $instance->query->addParam('ID');
         $instance->query->addParam('QNT1');
         $instance->query->addParam('QNT2');
         $instance->query->addParam('PRICE');
+        $instance->query->addParam('ACTION');
         $instance->query->addParam('TIMEST');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
@@ -161,7 +164,7 @@ class DropTable {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['testStrategy'],
+            $constants['Tables']['testStrategy01'],
             DROP
         );
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
