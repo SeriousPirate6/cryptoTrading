@@ -53,6 +53,7 @@ class CreateTable {
         $instance->query->addParam('QNT2',      'FLOAT',        30, 'NOT NULL');
         $instance->query->addParam('PRICE',     'FLOAT',        30, 'NOT NULL');
         $instance->query->addParam('ACTION',    'VARCHAR',      10);
+        $instance->query->addParam('TOTAL_QNT', 'FLOAT',        30);
         $instance->query->addParam('TIMEST',    'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
@@ -103,6 +104,7 @@ class InsertTable {
         $instance->query->addParam('QNT2',      'FLOAT',        30, $qnt2);
         $instance->query->addParam('PRICE',     'FLOAT',        30, $price);
         $instance->query->addParam('ACTION',    'VARCHAR',      10, $action);
+        $instance->query->addParam('TOTAL_QNT', 'FLOAT',        30, $qnt1 + $qnt2 * $price);
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -153,6 +155,7 @@ class SelectFrom {
         $instance->query->addParam('QNT2');
         $instance->query->addParam('PRICE');
         $instance->query->addParam('ACTION');
+        $instance->query->addParam('TOTAL_QNT');
         $instance->query->addParam('TIMEST');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;

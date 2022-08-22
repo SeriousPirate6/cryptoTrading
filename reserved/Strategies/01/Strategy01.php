@@ -18,8 +18,13 @@ class Strategy01 {
     public function __construct($qnt1, $qnt2, $curr) {
         $profit = $this->profit;
         $high_profit = $this->high_profit;
-        $this->liquidity = $qnt1;
-        $this->value = $qnt2;
+        if (!UtilityStrat01::selectLast()) {
+            $this->liquidity = $qnt1;
+            $this->value = $qnt2;
+        } else {
+            $this->liquidity = UtilityStrat01::selectLast()[1];
+            $this->value = UtilityStrat01::selectLast()[2];
+        }
         $method     = new GetMethods;
         $this->curr = $curr;
         $methodImpl = $method->getCandlestick($this->curr, '1m', 60);
@@ -32,11 +37,19 @@ class Strategy01 {
     }
 
     public function setQnt1($qnt1) {
-        $this->liquidity = $qnt1;
+        if (!UtilityStrat01::selectLast()) {
+            $this->liquidity = $qnt1;
+        } else {
+            $this->liquidity = UtilityStrat01::selectLast()[1];
+        }
     }
 
     public function setQnt2($qnt2) {
-        $this->value = $qnt2;
+        if (!UtilityStrat01::selectLast()) {
+            $this->value = $qnt2;
+        } else {
+            $this->value = UtilityStrat01::selectLast()[2];
+        }
     }
 
     public function updateDB() {
@@ -71,7 +84,7 @@ class Strategy01 {
             $buy = UtilityStrat01::getPercentageOf(15, $this->liquidity);
             UtilityStrat01::insertTable(
                 $this->liquidity - $buy,
-                $this->value + $buy / $lastClose,
+                $this->value + ($buy / $lastClose),
                 $lastClose,
                 "BUY 30"
             );
@@ -83,7 +96,7 @@ class Strategy01 {
             $buy = UtilityStrat01::getPercentageOf(10, $this->liquidity);
             UtilityStrat01::insertTable(
                 $this->liquidity - $buy,
-                $this->value + $buy / $lastClose,
+                $this->value + ($buy / $lastClose),
                 $lastClose,
                 "BUY 45"
             );
@@ -116,15 +129,34 @@ class Strategy01 {
             );
         }
     }
+
+    // public function allBuy($print = false) {
+    //     if ($print) TextFormatter::prettyPrint("BUY: ", '', Colors::orange);
+    //     $buy = 0;
+    //     $lastClose = end($this->closes);
+    //     if ($print) TextFormatter::prettyPrint($lastClose, "LAST CLOSE: ", Colors::orange);
+
+
+    //     $buy = UtilityStrat01::getPercentageOf(15, $this->liquidity);
+    //     TextFormatter::prettyPrint(($buy / $lastClose), "", Colors::light_blue);
+    //     TextFormatter::prettyPrint($this->value, "", Colors::light_blue);
+    //     TextFormatter::prettyPrint($this->value + ($buy / $lastClose), "", Colors::light_blue);
+    //     UtilityStrat01::insertTable(
+    //         $this->liquidity - $buy,
+    //         $this->value + ($buy / $lastClose),
+    //         $lastClose,
+    //         "BUY"
+    //     );
+    // }
 }
 
-$qnt1 = 100;
+$qnt1 = 100000;
 $qnt2 = 200;
 // UtilityStrat01::dropTable();
 UtilityStrat01::createTable();
 
 $strat = new Strategy01($qnt1, $qnt2, Currencies::BTC_USDT);
-$price = 100 / $strat->lastClose;
+$price = $qnt1 / $strat->lastClose;
 $strat->setQnt2($price);
 $strat->updateDB();
 
@@ -136,9 +168,8 @@ TextFormatter::prettyPrint($datas);
 
 $strat->buy(true);
 $strat->sell(true);
+// $strat->allBuy(true);
 
 var_dump(UtilityStrat01::isQnt1Enough(100));
 var_dump(UtilityStrat01::isQnt2Enough(200));
 TextFormatter::prettyPrint($strat->currentRSI, 'RSI', Colors::yellow);
-TextFormatter::prettyPrint(UtilityStrat01::calcPercentage(100, 19000, 9500), '', Colors::green);
-TextFormatter::prettyPrint(UtilityStrat01::getPercentageOf(15, 200), '', Colors::violet);
