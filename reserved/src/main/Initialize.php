@@ -37,9 +37,9 @@ $closes = ExtractFromRequest::closesToArray($closes);
 
 echo TextFormatter::switchButton(5);
 
-$period = 20;
+$period = 7;
 
-TextFormatter::prettyPrint(TradingView::rsi($closes, $period), 'RSI RMA: ', Colors::purple);
+TextFormatter::prettyPrint(TradingView::rsi($closes, $period), 'RSI RMA ' . $period . ': ', Colors::purple);
 TextFormatter::prettyPrint(TradingView::sma($closes, $period), 'SMA: ', Colors::yellow);
 TextFormatter::prettyPrint(TradingView::rma($closes, $period), 'RMA: ', Colors::violet);
 TextFormatter::prettyPrint(TradingView::atr($candles, $period), 'ATR: ', Colors::orange);

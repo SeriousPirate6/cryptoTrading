@@ -41,11 +41,11 @@ class CreateTable {
         return $instance->query;
     }
 
-    public static function testStrategy() {
+    public static function testStrategy($tableName) {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['testStrategy01'],
+            $constants['Tables']['testStrategy'] . "_" . $tableName,
             CREATE
         );
         $instance->query->addParam('ID',        'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
@@ -55,6 +55,20 @@ class CreateTable {
         $instance->query->addParam('ACTION',    'VARCHAR',      10);
         $instance->query->addParam('TOTAL_QNT', 'FLOAT',        30);
         $instance->query->addParam('TIMEST',    'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
+
+    public static function stratCounter() {
+        global $constants;
+        $instance = new self();
+        $instance->query = Query::fill(
+            $constants['Tables']['stratCounter'],
+            CREATE
+        );
+        $instance->query->addParam('ID',               'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
+        $instance->query->addParam('STRATEGY_NAME',    'VARCHAR',      100);
+        $instance->query->addParam('TIMEST',           'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -93,11 +107,23 @@ class InsertTable {
         return $instance->query;
     }
 
-    public static function testStrategy($qnt1, $qnt2, $price, $action) {
+    public static function stratCounter($strategyName) {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['testStrategy01'],
+            $constants['Tables']['stratCounter'],
+            INSERT
+        );
+        $instance->query->addParam('STRATEGY_NAME',    'VARCHAR',      100, $strategyName);
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
+
+    public static function testStrategy($tableName, $qnt1, $qnt2, $price, $action) {
+        global $constants;
+        $instance = new self();
+        $instance->query = Query::fill(
+            $constants['Tables']['testStrategy'] . "_" . $tableName,
             INSERT
         );
         $instance->query->addParam('QNT1',      'FLOAT',        30, $qnt1);
@@ -143,11 +169,11 @@ class SelectFrom {
         return $instance->query;
     }
 
-    public static function testStrategy() {
+    public static function testStrategy($tableName) {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['testStrategy01'],
+            $constants['Tables']['testStrategy'] . "_" . $tableName,
             SELECT
         );
         $instance->query->addParam('ID');
@@ -160,14 +186,39 @@ class SelectFrom {
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
-}
 
-class DropTable {
-    public static function testStrategy() {
+    public static function stratCounter() {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['testStrategy01'],
+            $constants['Tables']['stratCounter'],
+            SELECT
+        );
+        $instance->query->addParam('ID');
+        $instance->query->addParam('STRATEGY_NAME');
+        $instance->query->addParam('TIMEST');
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
+}
+
+class DropTable {
+    public static function testStrategy($tableName) {
+        global $constants;
+        $instance = new self();
+        $instance->query = Query::fill(
+            $constants['Tables']['testStrategy'] . "_" . $tableName,
+            DROP
+        );
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
+
+    public static function stratCounter() {
+        global $constants;
+        $instance = new self();
+        $instance->query = Query::fill(
+            $constants['Tables']['stratCounter'],
             DROP
         );
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);

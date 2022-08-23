@@ -2,7 +2,8 @@
 define('Tables', ([
     'currencyValue' => 'CURRENCY_VALUE',
     'currencyData'  => 'CURRENCY_DATA',
-    'testStrategy01'  => 'TEST_STRATEGY_01'
+    'testStrategy'  => 'TEST_STRATEGY',
+    'stratCounter'  => 'STRAT_COUNTER',
 ]));
 
 // Types

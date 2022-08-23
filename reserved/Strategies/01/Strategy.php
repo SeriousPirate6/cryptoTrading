@@ -3,9 +3,9 @@
 include '../../Services/Templates/Templates.php';
 include '../../Utils/Trading/Formulas.php';
 include '../../Utils/Trading/Indicators.php';
-include 'UtilityFuncs.php';
+include '../[Utility]/UtilityFuncs.php';
 
-class Strategy01 {
+class Strategy {
     public $profit;
     public $high_profit;
     public $liquidity = 100;
@@ -14,16 +14,18 @@ class Strategy01 {
     public $closes;
     public $currentRSI;
     public $lastClose;
+    public $utilityStrat;
 
     public function __construct($qnt1, $qnt2, $curr) {
         $profit = $this->profit;
         $high_profit = $this->high_profit;
-        if (!UtilityStrat01::selectLast()) {
+        $this->utilityStrat = new UtilityStrat(basename(__DIR__));
+        if (!$this->utilityStrat->selectLast()) {
             $this->liquidity = $qnt1;
             $this->value = $qnt2;
         } else {
-            $this->liquidity = UtilityStrat01::selectLast()[1];
-            $this->value = UtilityStrat01::selectLast()[2];
+            $this->liquidity = $this->utilityStrat->selectLast()[1];
+            $this->value = $this->utilityStrat->selectLast()[2];
         }
         $method     = new GetMethods;
         $this->curr = $curr;
@@ -37,24 +39,24 @@ class Strategy01 {
     }
 
     public function setQnt1($qnt1) {
-        if (!UtilityStrat01::selectLast()) {
+        if (!$this->utilityStrat->selectLast()) {
             $this->liquidity = $qnt1;
         } else {
-            $this->liquidity = UtilityStrat01::selectLast()[1];
+            $this->liquidity = $this->utilityStrat->selectLast()[1];
         }
     }
 
     public function setQnt2($qnt2) {
-        if (!UtilityStrat01::selectLast()) {
+        if (!$this->utilityStrat->selectLast()) {
             $this->value = $qnt2;
         } else {
-            $this->value = UtilityStrat01::selectLast()[2];
+            $this->value = $this->utilityStrat->selectLast()[2];
         }
     }
 
     public function updateDB() {
-        if (!UtilityStrat01::selectLast()) {
-            UtilityStrat01::insertTable(
+        if (!$this->utilityStrat->selectLast()) {
+            $this->utilityStrat->insertTable(
                 $this->liquidity,
                 $this->value,
                 $this->lastClose,
@@ -77,24 +79,24 @@ class Strategy01 {
     public function buy($print = false) {
         if ($print) TextFormatter::prettyPrint("BUY: ", '', Colors::orange);
         $buy = 0;
-        if (UtilityStrat01::rsiBelow30($this->candlesticks, $this->currentRSI)) {
+        if ($this->utilityStrat->rsiBelow($this->currentRSI, 30)) {
             $lastClose = end($this->closes);
             if ($print) TextFormatter::prettyPrint($lastClose, "<30 LAST CLOSE: ", Colors::orange);
 
-            $buy = UtilityStrat01::getPercentageOf(15, $this->liquidity);
-            UtilityStrat01::insertTable(
+            $buy = $this->utilityStrat->getPercentageOf(80, $this->liquidity);
+            $this->utilityStrat->insertTable(
                 $this->liquidity - $buy,
                 $this->value + ($buy / $lastClose),
                 $lastClose,
                 "BUY 30"
             );
         }
-        if (UtilityStrat01::rsiBelow45($this->candlesticks, $this->currentRSI)) {
+        if ($this->utilityStrat->rsiBelow($this->currentRSI, 45)) {
             $lastClose = end($this->closes);
             if ($print) TextFormatter::prettyPrint($lastClose, "<45 LAST CLOSE: ", Colors::orange);
 
-            $buy = UtilityStrat01::getPercentageOf(10, $this->liquidity);
-            UtilityStrat01::insertTable(
+            $buy = $this->utilityStrat->getPercentageOf(50, $this->liquidity);
+            $this->utilityStrat->insertTable(
                 $this->liquidity - $buy,
                 $this->value + ($buy / $lastClose),
                 $lastClose,
@@ -104,24 +106,24 @@ class Strategy01 {
     }
     public function sell($print = false) {
         if ($print) TextFormatter::prettyPrint("SELL: ", '', Colors::purple);
-        if (UtilityStrat01::rsiAbove55($this->candlesticks, $this->currentRSI)) {
+        if ($this->utilityStrat->rsiAbove($this->currentRSI, 55)) {
             $lastClose = end($this->closes);
             if ($print) TextFormatter::prettyPrint($lastClose, ">55 LAST CLOSE: ", Colors::purple);
 
-            $sell = UtilityStrat01::getPercentageOf(10, $this->value);
-            UtilityStrat01::insertTable(
+            $sell = $this->utilityStrat->getPercentageOf(50, $this->value);
+            $this->utilityStrat->insertTable(
                 $this->liquidity + $sell * $lastClose,
                 $this->value - $sell,
                 $lastClose,
                 "SELL 55"
             );
         }
-        if (UtilityStrat01::rsiAbove70($this->candlesticks, $this->currentRSI)) {
+        if ($this->utilityStrat->rsiAbove($this->currentRSI, 70)) {
             $lastClose = end($this->closes);
             if ($print) TextFormatter::prettyPrint($lastClose, ">70 LAST CLOSE: ", Colors::purple);
 
-            $sell = UtilityStrat01::getPercentageOf(15, $this->value);
-            UtilityStrat01::insertTable(
+            $sell = $this->utilityStrat->getPercentageOf(80, $this->value);
+            $this->utilityStrat->insertTable(
                 $this->liquidity + $sell * $lastClose,
                 $this->value - $sell,
                 $lastClose,
@@ -137,11 +139,11 @@ class Strategy01 {
     //     if ($print) TextFormatter::prettyPrint($lastClose, "LAST CLOSE: ", Colors::orange);
 
 
-    //     $buy = UtilityStrat01::getPercentageOf(15, $this->liquidity);
+    //     $buy = $this->utilityStrat->getPercentageOf(15, $this->liquidity);
     //     TextFormatter::prettyPrint(($buy / $lastClose), "", Colors::light_blue);
     //     TextFormatter::prettyPrint($this->value, "", Colors::light_blue);
     //     TextFormatter::prettyPrint($this->value + ($buy / $lastClose), "", Colors::light_blue);
-    //     UtilityStrat01::insertTable(
+    //     $this->utilityStrat->insertTable(
     //         $this->liquidity - $buy,
     //         $this->value + ($buy / $lastClose),
     //         $lastClose,
@@ -150,12 +152,12 @@ class Strategy01 {
     // }
 }
 
-$qnt1 = 100000;
-$qnt2 = 200;
-// UtilityStrat01::dropTable();
-UtilityStrat01::createTable();
+$qnt1 = 100;
+// $utilityStrat->dropTable();
+$utilityStrat = new UtilityStrat(basename(__DIR__));
+$utilityStrat->createTable();
 
-$strat = new Strategy01($qnt1, $qnt2, Currencies::BTC_USDT);
+$strat = new Strategy($qnt1, $price, Currencies::BTC_USDT);
 $price = $qnt1 / $strat->lastClose;
 $strat->setQnt2($price);
 $strat->updateDB();
@@ -163,13 +165,13 @@ $strat->updateDB();
 $profit = 0.25;
 $high_profit = 1;
 
-$datas = UtilityStrat01::selectLast();
+$datas = $utilityStrat->selectLast();
 TextFormatter::prettyPrint($datas);
 
 $strat->buy(true);
 $strat->sell(true);
 // $strat->allBuy(true);
 
-var_dump(UtilityStrat01::isQnt1Enough(100));
-var_dump(UtilityStrat01::isQnt2Enough(200));
+var_dump($utilityStrat->isQnt1Enough(100));
+var_dump($utilityStrat->isQnt2Enough(200));
 TextFormatter::prettyPrint($strat->currentRSI, 'RSI', Colors::yellow);
