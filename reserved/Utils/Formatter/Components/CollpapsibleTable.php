@@ -38,16 +38,22 @@ class CollapsibleTable {
         return $table;
     }
 
-    public function collapsablePrint($array) {
+    public function collapsablePrint($array, $open = false) {
         if (sizeof($array) > 0) {
+            $collapsible = '';
+            $display = '';
+            if ($open) {
+                $collapsible = 'active';
+                $display = 'style="display: block;"';
+            }
             echo
             '<body>
-                    <button type="button" class="collapsible"><h4>' . $this->title . '</h4></button>
-                    <div class="content">
-                        ' . CollapsibleTable::arrayToTable($array, $this->colors) . '
-                    </div>
-                    <script type="text/javascript" src="../../Utils/Formatter/Functions/CollapsibleTable.js"></script>
-                </body>';
+                <button type="button" class="collapsible ' . $collapsible . '"><h4>' . $this->title . '</h4></button>
+                <div class="content"' . $display . '>
+                    ' . CollapsibleTable::arrayToTable($array, $this->colors) . '
+                </div>
+                <script type="text/javascript" src="../../Utils/Formatter/Functions/CollapsibleTable.js"></script>
+            </body>';
         }
     }
 }

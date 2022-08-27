@@ -59,16 +59,31 @@ class CreateTable {
         return $instance->query;
     }
 
-    public static function stratCounter() {
+    public static function openOrders() {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['stratCounter'],
+            $constants['Tables']['openOrders'],
             CREATE
         );
-        $instance->query->addParam('ID',               'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
-        $instance->query->addParam('STRATEGY_NAME',    'VARCHAR',      100);
-        $instance->query->addParam('TIMEST',           'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+        $instance->query->addParam('ID',                    'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
+        $instance->query->addParam('STATUS',                'VARCHAR',      30, 'NOT NULL');
+        $instance->query->addParam('SIDE',                  'VARCHAR',      30, 'NOT NULL');
+        $instance->query->addParam('PRICE',                 'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('QUANTITY',              'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('REASON',                'FLOAT',        30);
+        $instance->query->addParam('ORDER_ID',              'VARCHAR',      30, 'NOT NULL');
+        $instance->query->addParam('CLIENT_OID',            'VARCHAR',      30, 'NOT NULL');
+        $instance->query->addParam('CREATE_TIME',           'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+        $instance->query->addParam('UPDATE_TIME',           'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+        $instance->query->addParam('TYPE',                  'VARCHAR',      30, 'NOT NULL');
+        $instance->query->addParam('INSTRUMENT_NAME',       'VARCHAR',      20, 'NOT NULL');
+        $instance->query->addParam('AVG_PRICE',             'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('CUMULATIVE_QUANTITY',   'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('CUMULATIVE_VALUE',      'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('FEE_CURRENCY',          'VARCHAR',      30, 'NOT NULL');
+        $instance->query->addParam('EXEC_INST',             'VARCHAR',      30, 'NOT NULL');
+        $instance->query->addParam('TIME_IN_FORCE',         'VARCHAR',      50, 'NOT NULL');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -107,18 +122,6 @@ class InsertTable {
         return $instance->query;
     }
 
-    public static function stratCounter($strategyName) {
-        global $constants;
-        $instance = new self();
-        $instance->query = Query::fill(
-            $constants['Tables']['stratCounter'],
-            INSERT
-        );
-        $instance->query->addParam('STRATEGY_NAME',    'VARCHAR',      100, $strategyName);
-        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
-        return $instance->query;
-    }
-
     public static function testStrategy($tableName, $qnt1, $qnt2, $price, $action) {
         global $constants;
         $instance = new self();
@@ -131,6 +134,35 @@ class InsertTable {
         $instance->query->addParam('PRICE',     'FLOAT',        30, $price);
         $instance->query->addParam('ACTION',    'VARCHAR',      10, $action);
         $instance->query->addParam('TOTAL_QNT', 'FLOAT',        30, $qnt1 + $qnt2 * $price);
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
+
+    public static function openOrders($orderlist) {
+        global $constants;
+        $instance = new self();
+        $instance->query = Query::fill(
+            $constants['Tables']['openOrders'],
+            INSERT
+        );
+        $instance->query->addParam('ID',                    'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
+        $instance->query->addParam('STATUS',                'VARCHAR',      30, 'NOT NULL',                                                 $orderlist['status']);
+        $instance->query->addParam('SIDE',                  'VARCHAR',      30, 'NOT NULL',                                                 $orderlist['side']);
+        $instance->query->addParam('PRICE',                 'FLOAT',        30, 'NOT NULL',                                                 $orderlist['price']);
+        $instance->query->addParam('QUANTITY',              'FLOAT',        30, 'NOT NULL',                                                 $orderlist['quantity']);
+        $instance->query->addParam('REASON',                'FLOAT',        30,                                                             $orderlist['reason']);
+        $instance->query->addParam('ORDER_ID',              'VARCHAR',      30, 'NOT NULL',                                                 $orderlist['order_id']);
+        $instance->query->addParam('CLIENT_OID',            'VARCHAR',      30, 'NOT NULL',                                                 $orderlist['client_oid']);
+        $instance->query->addParam('CREATE_TIME',           'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',    $orderlist['create_time']);
+        $instance->query->addParam('UPDATE_TIME',           'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',    $orderlist['update_time']);
+        $instance->query->addParam('TYPE',                  'VARCHAR',      30, 'NOT NULL',                                                 $orderlist['type']);
+        $instance->query->addParam('INSTRUMENT_NAME',       'VARCHAR',      20, 'NOT NULL',                                                 $orderlist['instrument_name']);
+        $instance->query->addParam('AVG_PRICE',             'FLOAT',        30, 'NOT NULL',                                                 $orderlist['avg_price']);
+        $instance->query->addParam('CUMULATIVE_QUANTITY',   'FLOAT',        30, 'NOT NULL',                                                 $orderlist['cumulative_quantity']);
+        $instance->query->addParam('CUMULATIVE_VALUE',      'FLOAT',        30, 'NOT NULL',                                                 $orderlist['cumulative_value']);
+        $instance->query->addParam('FEE_CURRENCY',          'VARCHAR',      30, 'NOT NULL',                                                 $orderlist['fee_currency']);
+        $instance->query->addParam('EXEC_INST',             'VARCHAR',      30, 'NOT NULL',                                                 $orderlist['exec_inst']);
+        $instance->query->addParam('TIME_IN_FORCE',         'VARCHAR',      50, 'NOT NULL',                                                 $orderlist['time_in_force']);
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -187,16 +219,31 @@ class SelectFrom {
         return $instance->query;
     }
 
-    public static function stratCounter() {
+    public static function openOrders() {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['stratCounter'],
+            $constants['Tables']['openOrders'],
             SELECT
         );
-        $instance->query->addParam('ID');
-        $instance->query->addParam('STRATEGY_NAME');
-        $instance->query->addParam('TIMEST');
+        $instance->query->addParam('ID',);
+        $instance->query->addParam('STATUS',);
+        $instance->query->addParam('PRICE',);
+        $instance->query->addParam('SIDE',);
+        $instance->query->addParam('QUANTITY',);
+        $instance->query->addParam('REASON',);
+        $instance->query->addParam('ORDER_ID',);
+        $instance->query->addParam('CLIENT_OID',);
+        $instance->query->addParam('CREATE_TIME',);
+        $instance->query->addParam('UPDATE_TIME',);
+        $instance->query->addParam('TYPE',);
+        $instance->query->addParam('INSTRUMENT_NAME',);
+        $instance->query->addParam('AVG_PRICE',);
+        $instance->query->addParam('CUMULATIVE_QUANTITY',);
+        $instance->query->addParam('CUMULATIVE_VALUE',);
+        $instance->query->addParam('FEE_CURRENCY',);
+        $instance->query->addParam('EXEC_INST',);
+        $instance->query->addParam('TIME_IN_FORCE',);
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -208,17 +255,6 @@ class DropTable {
         $instance = new self();
         $instance->query = Query::fill(
             $constants['Tables']['testStrategy'] . "_" . $tableName,
-            DROP
-        );
-        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
-        return $instance->query;
-    }
-
-    public static function stratCounter() {
-        global $constants;
-        $instance = new self();
-        $instance->query = Query::fill(
-            $constants['Tables']['stratCounter'],
             DROP
         );
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);

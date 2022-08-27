@@ -1,9 +1,10 @@
 <?php
 define('Tables', ([
-    'currencyValue' => 'CURRENCY_VALUE',
-    'currencyData'  => 'CURRENCY_DATA',
-    'testStrategy'  => 'TEST_STRATEGY',
-    'stratCounter'  => 'STRAT_COUNTER',
+    'currencyValue'     => 'CURRENCY_VALUE',
+    'currencyData'      => 'CURRENCY_DATA',
+    'testStrategy'      => 'TEST_STRATEGY',
+    'openOrders'        => 'OPEN_ORDERS',
+    'fulfilledOrders'   => 'FULFILLED_ORDERS',
 ]));
 
 // Types
