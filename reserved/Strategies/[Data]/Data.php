@@ -1,4 +1,6 @@
 <?php
+$instrumentName = "BTC_USDT";
+
 $params = [
     "instrument_name"   => "BTC_USDT",
     "side"              => "BUY",

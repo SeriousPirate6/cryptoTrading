@@ -151,14 +151,10 @@ RunQuery::create($createCurrData);
 $method     = new GetMethods;
 $method->curr = $curr;
 
-
-$instrument_name = "BTC_USDT";
-$side = "BUY";
-$type = "LIMIT";
-$price =  27000;
-$quantity = 1;
-
 $methodImpl = $method->createOrder($params);
+$request = SendRequest::sendReuquest($methodImpl, true);
+
+$methodImpl = $method->getOrderHistory($instrumentName);
 $request = SendRequest::sendReuquest($methodImpl, true);
 
 TextFormatter::prettyPrint($strat->currentRSI, 'RSI', Colors::yellow);

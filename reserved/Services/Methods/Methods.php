@@ -11,32 +11,33 @@ class Method {
     public function __construct() {
     }
 
-    function setMethodGET($visibility, $method, $params) {
-        $this->visibility   = $visibility;
-        $this->type         = GET;
-        $paramsString       = $params->getParams();
-        if (strlen($paramsString) > 0) {
-            $this->method   = $method . '?' . $paramsString;
-        } else {
-            $this->method   = $method;
-        }
-    }
-
-    function setMethodPOST($visibility, $method, $bodyRequest) {
+    function setMethod($type, $visibility, $method, $params) {
+        $this->type         = $type;
         $this->visibility   = $visibility;
         $this->method       = $method;
-        $this->type         = POST;
-        $this->bodyRequest  = $bodyRequest;
 
-        if ($this->visibility  == _private) {
-            $this->bodyRequest->setApiKey(api_key);
-            $this->bodyRequest->setSig(
-                hash_hmac(
-                    encType,
-                    $this->bodyRequest->getToEncrypt(),
-                    secret_key
-                )
-            );
+        if ($type == GET) {
+            $paramsString       = $params->getParams();
+            if (strlen($paramsString) > 0) {
+                $this->method   = $method . '?' . $paramsString;
+            } else {
+                $this->method   = $method;
+            }
+        }
+        if ($type == POST) {
+            $this->bodyRequest  = $params;
+            $this->bodyRequest->setDefault($type, $visibility, $method);
+
+            if ($this->visibility  == _private) {
+                $this->bodyRequest->setApiKey(api_key);
+                $this->bodyRequest->setSig(
+                    hash_hmac(
+                        encType,
+                        $this->bodyRequest->getToEncrypt(),
+                        secret_key
+                    )
+                );
+            }
         }
     }
 
@@ -69,11 +70,11 @@ class BodyRequest {
         $this->sig = $sig;
     }
 
-    function setDefault($type, $method) {
+    function setDefault($type, $visibility, $method) {
+        $this->method   = $visibility . $method;
         if ($type == 'POST') {
             global $id;
             $this->id       = $id;
-            $this->method   = $method;
             $this->nonce    = round(microtime(true) * 1000);
         }
     }
@@ -87,6 +88,8 @@ class BodyRequest {
     }
 
     function addParams($params) {
+        // Sort the key->value array by key.
+        ksort($params);
         foreach ($params as $param => $val) {
             $this->params[$param] = $val;
         }
@@ -105,10 +108,10 @@ class BodyRequest {
         return trim(substr($stringParams, 1));
     }
 
-    function getToEncrypt() {
+    function getToEncrypt($print = false) {
         $jsonParams = '';
         if (!empty($this->params)) $jsonParams = str_replace(['{', '"', ':', '}', ','], ['', '', '', '', ''], json_encode($this->params));
-        TextFormatter::prettyPrint(strval($this->method . $this->id . $this->api_key . $jsonParams . $this->nonce), 'TO_ENCRYPT: ', Colors::red);
+        if ($print) TextFormatter::prettyPrint(strval($this->method . $this->id . $this->api_key . $jsonParams . $this->nonce), 'TO_ENCRYPT: ', Colors::red);
         return strval($this->method . $this->id . $this->api_key . $jsonParams . $this->nonce);
     }
 }

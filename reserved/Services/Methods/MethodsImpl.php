@@ -11,7 +11,7 @@ class GetMethods {
     }
 
     public function getInstruments($print = false) {
-        $this->method->setMethodGET(_public, getInstruments, $this->bodyRequest);
+        $this->method->setMethod(GET, _public, getInstruments, $this->bodyRequest);
         $this->bodyRequest = new BodyRequest();
 
         if ($print) TextFormatter::prettyPrint($this->method);
@@ -22,7 +22,7 @@ class GetMethods {
 
     public function getBook($instrumentName, $print = false) {
         if ($instrumentName) $this->bodyRequest->addParam(instrumentName, $instrumentName);
-        $this->method->setMethodGET(_public, getBook, $this->bodyRequest);
+        $this->method->setMethod(GET, _public, getBook, $this->bodyRequest);
         $this->bodyRequest = new BodyRequest();
 
         if ($print) TextFormatter::prettyPrint($this->method);
@@ -35,7 +35,7 @@ class GetMethods {
         if ($instrumentName) $this->bodyRequest->addParam(instrumentName, $instrumentName);
         if ($timeFrame)      $this->bodyRequest->addParam(timeFrame, $timeFrame);
         if ($depth)          $this->bodyRequest->addParam(depth, $depth);
-        $this->method->setMethodGET(_public, getCandlestick, $this->bodyRequest);
+        $this->method->setMethod(GET, _public, getCandlestick, $this->bodyRequest);
         $this->bodyRequest = new BodyRequest();
 
         if ($print) TextFormatter::prettyPrint($this->method);
@@ -47,7 +47,7 @@ class GetMethods {
     public function getTicker($instrumentName, $timeFrame, $print = false) {
         if ($instrumentName) $this->bodyRequest->addParam(instrumentName, $instrumentName);
         if ($timeFrame)      $this->bodyRequest->addParam(timeFrame, $timeFrame);
-        $this->method->setMethodGET(_public, getTicker, $this->bodyRequest);
+        $this->method->setMethod(GET, _public, getTicker, $this->bodyRequest);
         $this->bodyRequest = new BodyRequest();
 
         if ($print) TextFormatter::prettyPrint($this->method);
@@ -57,8 +57,7 @@ class GetMethods {
     }
 
     public function getCurrencyNetwork($print = false) {
-        $this->bodyRequest->setDefault(POST, _private . getCurrencyNetwork);
-        $this->method->setMethodPOST(_private, getCurrencyNetwork, $this->bodyRequest);
+        $this->method->setMethod(POST, _private, getCurrencyNetwork, $this->bodyRequest);
         $this->bodyRequest = new BodyRequest();
 
         if ($print) TextFormatter::prettyPrint($this->method);
@@ -69,8 +68,7 @@ class GetMethods {
 
     public function getOrderHistory($instrumentName, $print = false) {
         $this->bodyRequest->addParam(instrumentName, $instrumentName);
-        $this->bodyRequest->setDefault(POST, _private . getOrderHistory);
-        $this->method->setMethodPOST(_private, getOrderHistory, $this->bodyRequest);
+        $this->method->setMethod(POST, _private, getOrderHistory, $this->bodyRequest);
         $this->bodyRequest = new BodyRequest();
 
         if ($print) TextFormatter::prettyPrint($this->method);
@@ -80,14 +78,8 @@ class GetMethods {
     }
 
     public function createOrder($params, $print = false) {
-        // $this->bodyRequest->addParams($params);
-        $this->bodyRequest->addParam(instrumentName, $params[instrumentName]);
-        $this->bodyRequest->addParam(price, $params[price]);
-        $this->bodyRequest->addParam(quantity, $params[quantity]);
-        $this->bodyRequest->addParam(side, $params[side]);
-        $this->bodyRequest->addParam(type, $params[type]);
-        $this->bodyRequest->setDefault(POST, _private . createOrder);
-        $this->method->setMethodPOST(_private, createOrder, $this->bodyRequest);
+        $this->bodyRequest->addParams($params);
+        $this->method->setMethod(POST, _private, createOrder, $this->bodyRequest);
         TextFormatter::prettyPrint($this->bodyRequest->getParams(), '', Colors::yellow);
         $this->bodyRequest = new BodyRequest();
 
