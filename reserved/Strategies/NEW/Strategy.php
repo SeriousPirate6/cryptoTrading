@@ -137,24 +137,22 @@ $utilityStrat->createTable();
 $strat = new Strategy($qnt1, $price, Currencies::ETH_USDT);
 $price = $qnt1 / $strat->lastClose;
 $strat->setQnt2($price);
-$strat->updateDB();
+// $strat->updateDB();
 
 $datas = $utilityStrat->selectLast();
 TextFormatter::prettyPrint($datas);
 
-$strat->buy(true);
-$strat->sell(true);
+// $strat->buy(true);
+// $strat->sell(true);
 
-$createCurrData = CreateTable::orders(false);
-RunQuery::create($createCurrData);
+$utilityStrat->insertTable(
+    $orderList
+);
 
 $method     = new GetMethods;
 $method->curr = $curr;
 
 $methodImpl = $method->createOrder($params);
-$request = SendRequest::sendReuquest($methodImpl, true);
-
-$methodImpl = $method->getOrderHistory($instrumentName);
 $request = SendRequest::sendReuquest($methodImpl, true);
 
 TextFormatter::prettyPrint($strat->currentRSI, 'RSI', Colors::yellow);

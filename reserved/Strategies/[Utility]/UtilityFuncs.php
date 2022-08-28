@@ -8,24 +8,24 @@ class UtilityStrat {
     }
 
     public function createTable() {
-        $createCurrData = CreateTable::testStrategy($this->tableName);
+        $createCurrData = CreateTable::orders(true, $this->tableName);
         RunQuery::create($createCurrData);
     }
 
-    public function insertTable($qnt1, $qnt2, $price, $action) {
-        $insertCurrData = InsertTable::testStrategy($this->tableName, $qnt1, $qnt2, $price, $action);
+    public function insertTable($params) {
+        $insertCurrData = InsertTable::orders($params, true, $this->tableName);
         RunQuery::insert($insertCurrData);
     }
 
     public function selectLast($table = false) {
-        $selectCurrData = SelectFrom::testStrategy($this->tableName);
+        $selectCurrData = SelectFrom::orders(true, $this->tableName);
         $rows = RunQuery::select($selectCurrData, $table);
         $lastRow = $rows ? end($rows) : null;
         return $lastRow;
     }
 
     public function dropTable() {
-        $dropCurrData = DropTable::testStrategy($this->tableName);
+        $dropCurrData = DropTable::orders(true, $this->tableName);
         RunQuery::drop($dropCurrData);
     }
 
