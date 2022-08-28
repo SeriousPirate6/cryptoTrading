@@ -59,11 +59,11 @@ class CreateTable {
         return $instance->query;
     }
 
-    public static function openOrders() {
+    public static function orders($active = true) {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['openOrders'],
+            $active ? $constants['Tables']['orders'] . '_ACTIVE' : $constants['Tables']['orders'] . '_HISTORY',
             CREATE
         );
         $instance->query->addParam('ID',                    'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
@@ -138,11 +138,11 @@ class InsertTable {
         return $instance->query;
     }
 
-    public static function openOrders($orderlist) {
+    public static function orders($orderlist) {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['openOrders'],
+            $constants['Tables']['orders'],
             INSERT
         );
         $instance->query->addParam('ID',                    'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
@@ -219,31 +219,31 @@ class SelectFrom {
         return $instance->query;
     }
 
-    public static function openOrders() {
+    public static function orders() {
         global $constants;
         $instance = new self();
         $instance->query = Query::fill(
-            $constants['Tables']['openOrders'],
+            $constants['Tables']['orders'],
             SELECT
         );
-        $instance->query->addParam('ID',);
-        $instance->query->addParam('STATUS',);
-        $instance->query->addParam('PRICE',);
-        $instance->query->addParam('SIDE',);
-        $instance->query->addParam('QUANTITY',);
-        $instance->query->addParam('REASON',);
-        $instance->query->addParam('ORDER_ID',);
-        $instance->query->addParam('CLIENT_OID',);
-        $instance->query->addParam('CREATE_TIME',);
-        $instance->query->addParam('UPDATE_TIME',);
-        $instance->query->addParam('TYPE',);
-        $instance->query->addParam('INSTRUMENT_NAME',);
-        $instance->query->addParam('AVG_PRICE',);
-        $instance->query->addParam('CUMULATIVE_QUANTITY',);
-        $instance->query->addParam('CUMULATIVE_VALUE',);
-        $instance->query->addParam('FEE_CURRENCY',);
-        $instance->query->addParam('EXEC_INST',);
-        $instance->query->addParam('TIME_IN_FORCE',);
+        $instance->query->addParam('ID');
+        $instance->query->addParam('STATUS');
+        $instance->query->addParam('PRICE');
+        $instance->query->addParam('SIDE');
+        $instance->query->addParam('QUANTITY');
+        $instance->query->addParam('REASON');
+        $instance->query->addParam('ORDER_ID');
+        $instance->query->addParam('CLIENT_OID');
+        $instance->query->addParam('CREATE_TIME');
+        $instance->query->addParam('UPDATE_TIME');
+        $instance->query->addParam('TYPE');
+        $instance->query->addParam('INSTRUMENT_NAME');
+        $instance->query->addParam('AVG_PRICE');
+        $instance->query->addParam('CUMULATIVE_QUANTITY');
+        $instance->query->addParam('CUMULATIVE_VALUE');
+        $instance->query->addParam('FEE_CURRENCY');
+        $instance->query->addParam('EXEC_INST');
+        $instance->query->addParam('TIME_IN_FORCE');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }

@@ -16,12 +16,14 @@ class TextFormatter {
     }
 
     public static function jsonReadableDate($result) {
-        $edRes = $result['result']['data'];
-        for ($i = 0; $i < sizeof($edRes); $i++) {
-            $readableDate = $edRes[$i]['t'];
-            $edRes[$i]['t'] = $readableDate . ' => ' . TextFormatter::millsToDate((int) $readableDate);
+        $edRes = $result['result']['data'] ? $result['result']['data'] : $result['result'];
+        if ($edRes[0]['t']) {
+            for ($i = 0; $i < sizeof($edRes); $i++) {
+                $readableDate = $edRes[$i]['t'];
+                $edRes[$i]['t'] = $readableDate . ' => ' . TextFormatter::millsToDate((int) $readableDate);
+            }
+            $result['result']['data'] = $edRes;
         }
-        $result['result']['data'] = $edRes;
         return $result;
     }
 

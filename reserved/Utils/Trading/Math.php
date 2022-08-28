@@ -1,4 +1,5 @@
 <?php
+include 'TestData/Datas.php';
 include '../../Variables/Styles.php';
 include '../../Utils/Formatter/Formatter.php';
 
@@ -22,11 +23,11 @@ class Math {
         return $calc_tot;
     }
 
-    public static function getProfit($array, $print = false, $onlyGain = false) {
+    public static function getProfit($array, $print = false, $name = 'PROFIT', $onlyGain = false) {
         $profit = array();
         $tot    = 0;
 
-        $text = new CollapsibleTable('PROFIT');
+        $text = new CollapsibleTable($name == '' ? 'PROFIT' : $name);
         $text->addToPrint(['BUY', 'SELL', '% PROFIT', 'TOT']);
 
         for ($i = 0; $i < sizeof($array); $i++) {
@@ -54,39 +55,8 @@ class Math {
     }
 }
 
-$earn = [
-    [148.6,     06],
-    [85,        06],
-    [131.7,     11],
-    [608.1,     03],
-    [396.63,    03],
-    [322.42,    03],
-    [106.43,    02],
-];
-
-$profit2608 = [
-    [21445, 21562],
-    [21495, 21608],
-    [21394, 21688],
-    [21411, 21688],
-    [21373, 21800],
-    [21226, 21800],
-    [21495, 21764],
-    [20907, 20700],
-    [20647, 20700],
-    [20597, 20700],
-];
-
-$profit2708 = [
-    [20283, 20368],
-    [20276, 20368],
-    [20148, 20368],
-    [20142, 20245],
-    [19942, 20245],
-    [20112, 20229],
-    [20027, 20090],
-    [19820, 20040],
-];
-
-$onlyGain = false;
-Math::getProfit($profit2708, true, $onlyGain);
+$printable      = true;
+$onlyGain       = false;
+// Math::getProfit($profit20220826, $printable, '26/08', $onlyGain);
+// Math::getProfit($profit20220827, $printable, '27/08', $onlyGain);
+Math::getProfit($profit20220828, $printable, '28/08', $onlyGain);
