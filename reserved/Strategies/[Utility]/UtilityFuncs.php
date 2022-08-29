@@ -17,6 +17,13 @@ class UtilityStrat {
         RunQuery::insert($insertCurrData);
     }
 
+    public function select($table = false) {
+        $selectCurrData = SelectFrom::orders(true, $this->tableName);
+        $rows = RunQuery::select($selectCurrData, $table);
+        $lastRow = $rows ? $rows : null;
+        return $lastRow;
+    }
+
     public function selectLast($table = false) {
         $selectCurrData = SelectFrom::orders(true, $this->tableName);
         $rows = RunQuery::select($selectCurrData, $table);

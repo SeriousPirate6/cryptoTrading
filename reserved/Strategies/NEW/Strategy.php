@@ -140,14 +140,15 @@ $strat->setQnt2($price);
 // $strat->updateDB();
 
 $datas = $utilityStrat->selectLast();
-TextFormatter::prettyPrint($datas);
+$datas = $utilityStrat->select();
+TextFormatter::prettyPrint($datas, '', Colors::orange);
 
 // $strat->buy(true);
 // $strat->sell(true);
 
-$utilityStrat->insertTable(
-    $orderList
-);
+// $utilityStrat->insertTable(
+//     $orderList
+// );
 
 $method     = new GetMethods;
 $method->curr = $curr;

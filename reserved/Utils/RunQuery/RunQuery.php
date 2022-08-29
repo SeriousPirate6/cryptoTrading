@@ -72,18 +72,23 @@ abstract class RunQuery {
             }
             $text->addToPrint($vals);
             $vals = array();
+            $res = array();
             while ($row = $result->fetch_assoc()) {
                 if ($print) TextFormatter::prettyPrint($query);
+                $row_to_res = array();
                 foreach ($query->queryParams as $val) {
                     array_push($vals, $row[$val->name]);
+                    $row_to_res = array_merge($row_to_res, array($val->name => $row[$val->name]));
                 }
+                array_push($res, $row_to_res);
                 $text->addToPrint($vals);
                 $query->addValue($vals);
                 $vals = array();
             }
             if ($table) $text->collapsablePrint($text->array);
+            if ($print) TextFormatter::prettyPrint($res, 'RESULTS: ', Colors::purple);
             array_shift($text->array);
-            return $text->array;
+            return $res;
         } else {
             echo "0 results";
         }
