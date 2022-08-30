@@ -7,6 +7,15 @@ class UtilityStrat {
         $this->tableName = $tableName;
     }
 
+    public static function setParams($side, $price, $quantity, $instrumentName) {
+        global $orderList;
+        $orderList['orderList']['side']             = $side;
+        $orderList['orderList']['price']            = $price;
+        $orderList['orderList']['quantity']         = $quantity;
+        $orderList['orderList']['instrumentName']   = $instrumentName;
+        return $orderList['orderList'];
+    }
+
     public function createTable() {
         $createCurrData = CreateTable::orders(true, $this->tableName);
         RunQuery::create($createCurrData);
@@ -19,7 +28,7 @@ class UtilityStrat {
 
     public function select($table = false) {
         $selectCurrData = SelectFrom::orders(true, $this->tableName);
-        $rows = RunQuery::select($selectCurrData, $table);
+        $rows = RunQuery::select($selectCurrData, $table, true);
         $lastRow = $rows ? $rows : null;
         return $lastRow;
     }
@@ -28,6 +37,23 @@ class UtilityStrat {
         $selectCurrData = SelectFrom::orders(true, $this->tableName);
         $rows = RunQuery::select($selectCurrData, $table);
         $lastRow = $rows ? end($rows) : null;
+        return $lastRow;
+    }
+
+    public function checkPrice($result, $price) {
+        $ids = array();
+        foreach ($result as $key => $value) {
+            if ($value['price'] < $price) {
+                array_push($ids, $value['order_id']);
+            }
+        }
+        return $ids;
+    }
+
+    public function selectPriceBelowThan($price, $table = false) {
+        $query = SelectFrom::orderBelowCurrentPrice($price, true, $this->tableName);
+        $rows = RunQuery::select($query, $table, true);
+        $lastRow = $rows ? $rows : null;
         return $lastRow;
     }
 

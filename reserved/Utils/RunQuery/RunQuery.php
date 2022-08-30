@@ -63,7 +63,7 @@ abstract class RunQuery {
         }
         $conn->close();
 
-        $vals   = array();
+        $vals = array();
 
         if ($result->num_rows > 0) {
             $text = new CollapsibleTable($query->type . ', ' . $query->tableName . ', ' . $result->num_rows . ' records, ' . $result->field_count . ' fields');
@@ -78,7 +78,8 @@ abstract class RunQuery {
                 $row_to_res = array();
                 foreach ($query->queryParams as $val) {
                     array_push($vals, $row[$val->name]);
-                    $row_to_res = array_merge($row_to_res, array($val->name => $row[$val->name]));
+                    // Saving <Key, Val> array with lowercase table columns.
+                    $row_to_res = array_merge($row_to_res, array(strtolower($val->name) => $row[$val->name]));
                 }
                 array_push($res, $row_to_res);
                 $text->addToPrint($vals);

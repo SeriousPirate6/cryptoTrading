@@ -198,6 +198,24 @@ class SelectFrom {
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
+
+    public static function orderBelowCurrentPrice($price,  $active = true, $test = null) {
+        global $constants;
+        $instance = new self();
+        $tableName = $active ? $constants['Tables']['orders'] . '_ACTIVE' : $constants['Tables']['orders'] . '_HISTORY';
+        $tableName = $test ? 'TEST_' . $test . '_' . $tableName : $tableName;
+        $instance->query = Query::fill(
+            $tableName,
+            SELECT
+        );
+        // Columns to show 
+        $instance->query->addParam('ID');
+        $instance->query->addParam('ORDER_ID');
+        // Where conditions
+        $instance->query->addWhereCondition('PRICE', lessThan, $price);
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
 }
 
 class DropTable {

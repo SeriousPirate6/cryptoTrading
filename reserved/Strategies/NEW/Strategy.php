@@ -7,34 +7,34 @@ include '../[Utility]/UtilityFuncs.php';
 include '../[Data]/Data.php';
 
 class Strategy {
-    public $value;
+    public $price;
     public $closes;
+    public $quantity;
     public $lastClose;
-    public $liquidity;
     public $currentRSI;
     public $candlesticks;
     public $utilityStrat;
+    public $instrumentName;
 
-    public function __construct($qnt1, $qnt2, $curr) {
+    public function __construct($price, $quantity, $instrumentName) {
         $this->utilityStrat = new UtilityStrat(basename(__DIR__));
-
+        $this->instrumentName = $instrumentName;
         /**
          * Checking if table and datas are already present
          */
         if (!$this->utilityStrat->selectLast()) {
-            $this->liquidity = $qnt1;
-            $this->value = $qnt2;
+            $this->price    = $price;
+            $this->quantity = $quantity;
         } else {
-            $this->liquidity = $this->utilityStrat->selectLast()[1];
-            $this->value = $this->utilityStrat->selectLast()[2];
+            $this->price    = $this->utilityStrat->selectLast()[1];
+            $this->quantity = $this->utilityStrat->selectLast()[2];
         }
 
         /**
          * Method setup, API call and data extraction
          */
         $method     = new GetMethods;
-        $this->curr = $curr;
-        $methodImpl = $method->getCandlestick($this->curr, '1m', 60);
+        $methodImpl = $method->getCandlestick($instrumentName, '1m', 60);
         $request = SendRequest::sendReuquest($methodImpl);
         $this->candlesticks = ExtractFromRequest::candlesticksCollapsableTable($request);
         $this->closes = ExtractFromRequest::closesCollapsableTable($request);
@@ -58,19 +58,19 @@ class Strategy {
     /**
      * Setters
      */
-    public function setQnt1($qnt1) {
+    public function setPrice($price) {
         if (!$this->utilityStrat->selectLast()) {
-            $this->liquidity = $qnt1;
+            $this->price = $price;
         } else {
-            $this->liquidity = $this->utilityStrat->selectLast()[1];
+            $this->price = $this->utilityStrat->selectLast()[1];
         }
     }
 
-    public function setQnt2($qnt2) {
+    public function setQuantity($quantity) {
         if (!$this->utilityStrat->selectLast()) {
-            $this->value = $qnt2;
+            $this->quantity = $quantity;
         } else {
-            $this->value = $this->utilityStrat->selectLast()[2];
+            $this->quantity = $this->utilityStrat->selectLast()[2];
         }
     }
 
@@ -78,13 +78,9 @@ class Strategy {
      * Update DB
      */
     public function updateDB() {
+        $param = UtilityStrat::setParams('START', $this->price, $this->quantity, $this->instrumentName);
         if (!$this->utilityStrat->selectLast()) {
-            $this->utilityStrat->insertTable(
-                $this->liquidity,
-                $this->value,
-                $this->lastClose,
-                ""
-            );
+            $this->utilityStrat->insertTable($param);
         }
     }
 
@@ -128,30 +124,34 @@ class Strategy {
     }
 }
 
-$qnt1 = 100;
+$price = 100;
 $utilityStrat = new UtilityStrat(basename(__DIR__));
-$curr = Currencies::ETH_USDT;
+$instrumentName = Currencies::ETH_USDT;
 
+$utilityStrat->dropTable();
 $utilityStrat->createTable();
 
-$strat = new Strategy($qnt1, $price, Currencies::ETH_USDT);
-$price = $qnt1 / $strat->lastClose;
-$strat->setQnt2($price);
-// $strat->updateDB();
+$strat = new Strategy($price, $quantity, Currencies::ETH_USDT);
+$quantity = $price / $strat->lastClose;
+$strat->setQuantity($quantity);
+$strat->updateDB();
 
+$orderList["order_id"] = 10;
+
+$utilityStrat->insertTable(
+    $orderList
+);
 $datas = $utilityStrat->selectLast();
 $datas = $utilityStrat->select();
 TextFormatter::prettyPrint($datas, '', Colors::orange);
+$datas = $utilityStrat->selectPriceBelowThan(30000);
+TextFormatter::prettyPrint($datas, '', Colors::blue);
 
 // $strat->buy(true);
 // $strat->sell(true);
 
-// $utilityStrat->insertTable(
-//     $orderList
-// );
-
-$method     = new GetMethods;
-$method->curr = $curr;
+$method                 = new GetMethods;
+$method->instrumentName = $instrumentName;
 
 $methodImpl = $method->createOrder($params);
 $request = SendRequest::sendReuquest($methodImpl, true);

@@ -29,10 +29,17 @@ abstract class QueryBuilder {
 
         if ($type == SELECT) {
             $names = '';
+            $where = '';
             foreach (array_reverse($query->queryParams) as $param) {
                 $names = $param->name . ", " . $names;
             }
-            return $query->type . " " . substr(trim($names), 0, -1) . " FROM " . $query->tableName;
+            foreach (array_reverse($query->whereConditions) as $whCond) {
+                $where = $whCond->name . " " . $whCond->operator . " " . $whCond->value . " AND " . $where;
+            }
+            if (empty($query->queryParams)) $names = "*";
+            else $names = substr(trim($names), 0, -1);
+            if (!empty($query->whereConditions)) $where = " WHERE " . substr(trim($where), 0, -3);
+            return $query->type . " " . $names . " FROM " . $query->tableName . $where;
         }
 
         if ($type == DROP) {

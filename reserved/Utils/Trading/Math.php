@@ -59,4 +59,4 @@ $printable      = true;
 $onlyGain       = false;
 // Math::getProfit($profit20220826, $printable, '26/08', $onlyGain);
 // Math::getProfit($profit20220827, $printable, '27/08', $onlyGain);
-Math::getProfit($profit20220829, $printable, '29/08', $onlyGain);
+Math::getProfit($profit20220830, $printable, 'PROFIT PERCENTS', $onlyGain);

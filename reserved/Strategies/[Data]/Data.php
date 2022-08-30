@@ -9,7 +9,7 @@ $params = [
     "quantity"              => 1,
 ];
 
-$orderList = [
+define('orderList', ([
     "status"                => "TEST",
     "side"                  => "SELL",
     "price"                 => 22000,
@@ -19,7 +19,7 @@ $orderList = [
     "client_oid"            => 1661627518325,
     "create_time"           => 1661627518325,
     "update_time"           => "",
-    "type"                  => "LIMIT",
+    "type"                  => "MARKET",
     "instrument_name"       => $instrumentName,
     "avg_price"             => 0.00,
     "cumulative_quantity"   => 0,
@@ -27,4 +27,7 @@ $orderList = [
     "fee_currency"          => "",
     "exec_inst"             => "",
     "time_in_force"         => "GOOD_TILL_CANCEL",
-];
+]));
+
+$orderList = get_defined_constants(true);
+$orderList = $orderList['user'];

@@ -12,5 +12,12 @@ const INSERT = 'INSERT';
 const SELECT = 'SELECT';
 const DROP   = 'DROP';
 
+//Operators
+const lessThan          = '<';
+const lessOrEqual       = '<=';
+const equal             = '=';
+const greaterOrEqual    = '>=';
+const greaterThan       = '>';
+
 $constants = get_defined_constants(true);
 $constants = $constants['user'];
