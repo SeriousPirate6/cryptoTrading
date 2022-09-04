@@ -36,10 +36,18 @@ abstract class QueryBuilder {
             foreach (array_reverse($query->whereConditions) as $whCond) {
                 $where = $whCond->name . " " . $whCond->operator . " " . $whCond->value . " AND " . $where;
             }
-            if (empty($query->queryParams)) $names = "*";
-            else $names = substr(trim($names), 0, -1);
+            $names = substr(trim($names), 0, -1);
             if (!empty($query->whereConditions)) $where = " WHERE " . substr(trim($where), 0, -3);
             return $query->type . " " . $names . " FROM " . $query->tableName . $where;
+        }
+
+        if ($type == DELETE) {
+            $where = '';
+            foreach (array_reverse($query->whereConditions) as $whCond) {
+                $where = $whCond->name . " " . $whCond->operator . " " . $whCond->value . " AND " . $where;
+            }
+            if (!empty($query->whereConditions)) $where = " WHERE " . substr(trim($where), 0, -3);
+            return $query->type . " FROM " . $query->tableName . $where;
         }
 
         if ($type == DROP) {

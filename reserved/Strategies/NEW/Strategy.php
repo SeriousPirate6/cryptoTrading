@@ -11,23 +11,26 @@ class Strategy {
     public $closes;
     public $quantity;
     public $lastClose;
+    public $liquidity;
     public $currentRSI;
     public $candlesticks;
     public $utilityStrat;
     public $instrumentName;
 
-    public function __construct($price, $quantity, $instrumentName) {
-        $this->utilityStrat = new UtilityStrat(basename(__DIR__));
+    public function __construct($liquidity, $price, $quantity, $instrumentName) {
+        $this->utilityStrat = new UtilityStrat(basename(__DIR__), $instrumentName);
         $this->instrumentName = $instrumentName;
         /**
          * Checking if table and datas are already present
          */
-        if (!$this->utilityStrat->selectLast()) {
-            $this->price    = $price;
-            $this->quantity = $quantity;
+        if (!$this->utilityStrat->selectBalance()) {
+            $this->price        = $price;
+            $this->quantity     = $quantity;
+            $this->liquidity    = $liquidity;
         } else {
-            $this->price    = $this->utilityStrat->selectLast()[1];
-            $this->quantity = $this->utilityStrat->selectLast()[2];
+            $this->liquidity    = $this->utilityStrat->selectLastBalance()['funds'];
+            $this->quantity     = $this->utilityStrat->selectLastBalance()['asset_qnt'];
+            $this->price        = $this->utilityStrat->selectLastBalance()['value_price'];
         }
 
         /**
@@ -58,19 +61,27 @@ class Strategy {
     /**
      * Setters
      */
-    public function setPrice($price) {
-        if (!$this->utilityStrat->selectLast()) {
-            $this->price = $price;
+    public function setLiquidity($liquidity) {
+        if (!$this->utilityStrat->selectLastBalance()) {
+            $this->liquidity = $liquidity;
         } else {
-            $this->price = $this->utilityStrat->selectLast()[1];
+            $this->liquidity = $this->utilityStrat->selectLastBalance()['funds'];
         }
     }
 
     public function setQuantity($quantity) {
-        if (!$this->utilityStrat->selectLast()) {
+        if (!$this->utilityStrat->selectLastBalance()) {
             $this->quantity = $quantity;
         } else {
-            $this->quantity = $this->utilityStrat->selectLast()[2];
+            $this->quantity = $this->utilityStrat->selectLastBalance()['asset_qnt'];
+        }
+    }
+
+    public function setPrice($price) {
+        if (!$this->utilityStrat->selectLastBalance()) {
+            $this->price = $price;
+        } else {
+            $this->price = $this->utilityStrat->selectLastBalance()['value_price'];
         }
     }
 
@@ -78,9 +89,15 @@ class Strategy {
      * Update DB
      */
     public function updateDB() {
-        $param = UtilityStrat::setParams('START', $this->price, $this->quantity, $this->instrumentName);
-        if (!$this->utilityStrat->selectLast()) {
-            $this->utilityStrat->insertTable($param);
+        $param = UtilityStrat::setBalanceParams(
+            $this->instrumentName,
+            $this->liquidity,
+            $this->quantity,
+            $this->price,
+            "INITIALIZATION"
+        );
+        if (!$this->utilityStrat->selectBalance()) {
+            $this->utilityStrat->insertBalance($param);
         }
     }
 
@@ -89,18 +106,46 @@ class Strategy {
      */
     public function buy($print = false) {
         if ($print) TextFormatter::prettyPrint("BUY: ", '', Colors::orange);
-        $buy = 0;
-        if ($this->utilityStrat->rsiBelow($this->currentRSI, 30)) {
-            $lastClose = end($this->closes);
-            if ($print) TextFormatter::prettyPrint($lastClose, "<30 LAST CLOSE: ", Colors::orange);
+        $lastPrice = $this->utilityStrat->getLastPrice();
+        $lastClose = end($this->closes);
 
-            $buy = $this->utilityStrat->getPercentageOf(20, $this->liquidity);
-            $this->utilityStrat->insertTable(
-                $this->liquidity - $buy,
-                $this->value + ($buy / $lastClose),
-                $lastClose,
-                "BUY 30"
-            );
+        // cases
+        $rsi30      = $this->utilityStrat->rsiBelow($this->currentRSI, 30);
+        $priceDown  = $this->utilityStrat->calcPercentage($lastPrice, $lastClose) < -0.5;
+
+        if ($rsi30 || $priceDown) {
+            if ($print) TextFormatter::prettyPrint($lastClose, $rsi30 ? "<30 LAST CLOSE: " : "PRICE DOWN LAST CLOSE: ", Colors::orange);
+
+            $tot_funds = $this->liquidity + $this->price * $this->quantity;
+
+            $buy = $rsi30 ?
+                $this->utilityStrat->getPercentageOf(10, $tot_funds) :
+                $this->utilityStrat->getPercentageOf(5, $tot_funds);
+
+            if ($this->utilityStrat->isLiQuidityEnough($buy)) {
+                $this->liquidity = $this->liquidity - $buy;
+                $this->quantity = $this->quantity + ($buy / $lastClose);
+                // update the balance
+                $this->utilityStrat->insertBalance(
+                    UtilityStrat::setBalanceParams(
+                        $this->instrumentName,
+                        $this->liquidity,
+                        $this->quantity,
+                        $lastClose,
+                        $rsi30 ? "BUY 30" : "PRICE_DOWN"
+                    )
+                );
+                // store the order
+                $this->utilityStrat->insertOrders(
+                    UtilityStrat::setOrderParams(
+                        "BUY",
+                        $lastClose,
+                        $this->quantity,
+                        $this->strumentName,
+                    ),
+                    true
+                );
+            } else TextFormatter::prettyPrint("NOT ENOUGH LIQUIDITY, DAAAMN!", '', Colors::red);
         }
     }
 
@@ -109,51 +154,79 @@ class Strategy {
      */
     public function sell($print = false) {
         if ($print) TextFormatter::prettyPrint("SELL: ", '', Colors::purple);
-        if ($this->utilityStrat->rsiAbove($this->currentRSI, 70)) {
-            $lastClose = end($this->closes);
-            if ($print) TextFormatter::prettyPrint($lastClose, ">70 LAST CLOSE: ", Colors::purple);
+        $lastPrice = $this->utilityStrat->getLastPrice();
+        $lastClose = end($this->closes);
 
-            $sell = $this->utilityStrat->getPercentageOf(20, $this->value);
-            $this->utilityStrat->insertTable(
-                $this->liquidity + $sell * $lastClose,
-                $this->value - $sell,
-                $lastClose,
-                "SELL 70"
-            );
+        // cases
+        $rsi70      = $this->utilityStrat->rsiBelow($this->currentRSI, 30);
+        $priceUp    = $this->utilityStrat->calcPercentage($lastPrice, $lastClose) > -0.5;
+
+        if ($rsi70 || $priceUp) {
+            if ($print) TextFormatter::prettyPrint($lastClose, $rsi70 ? ">70 LAST CLOSE: " : "PRICE UP LAST CLOSE: ", Colors::purple);
+
+            $sell = $this->utilityStrat->getFirstBoughtQnt();
+            TextFormatter::prettyPrint($sell);
+            if ($this->utilityStrat->isAssetQntEnough($sell)) {
+                $this->liquidity = $this->liquidity + $sell * $lastClose;
+                $this->quantity = $this->quantity - $sell;
+                // update the balance
+                $this->utilityStrat->insertBalance(
+                    UtilityStrat::setBalanceParams(
+                        $this->instrumentName,
+                        $this->liquidity,
+                        $this->quantity,
+                        $lastClose,
+                        $rsi70 ? "SELL 70" : "PRICE_UP"
+                    )
+                );
+                $closing_order_id = $this->utilityStrat->selectPriceBelowThan($lastClose)[0]["id"];
+                TextFormatter::prettyPrint($closing_order_id, 'CLOSING ORDER', Colors::blue);
+
+                // set order params
+                $order_params = UtilityStrat::setOrderParams(
+                    "SELL",
+                    $lastClose,
+                    $this->quantity,
+                    $this->strumentName,
+                );
+                // close the pending order: move it from active order table to history table
+                $this->utilityStrat->closeOrder($closing_order_id, $order_params);
+            } else TextFormatter::prettyPrint("NOT ENOUGH ASSETS, DAAAMN!", '', Colors::yellow);
         }
     }
 }
 
-$price = 100;
-$utilityStrat = new UtilityStrat(basename(__DIR__));
+// initializing params
+$liquidity      = 100;
+$price          = 100;
 $instrumentName = Currencies::ETH_USDT;
+$utilityStrat   = new UtilityStrat(basename(__DIR__), $instrumentName);
 
-$utilityStrat->dropTable();
-$utilityStrat->createTable();
+// creating tables
+$utilityStrat->createOrders(true);
+$utilityStrat->createOrders(false);
+$utilityStrat->createBalance();
 
-$strat = new Strategy($price, $quantity, Currencies::ETH_USDT);
+// Initializing the strategy
+$strat = new Strategy($liquidity, $price, 0, $instrumentName);
 $quantity = $price / $strat->lastClose;
 $strat->setQuantity($quantity);
 $strat->updateDB();
 
-$orderList["order_id"] = 10;
+TextFormatter::prettyPrint($strat->quantity, 'QNT', Colors::purple);
 
-$utilityStrat->insertTable(
-    $orderList
-);
-$datas = $utilityStrat->selectLast();
-$datas = $utilityStrat->select();
-TextFormatter::prettyPrint($datas, '', Colors::orange);
-$datas = $utilityStrat->selectPriceBelowThan(30000);
-TextFormatter::prettyPrint($datas, '', Colors::blue);
+$datas = $utilityStrat->selectLastOrder();
+$datas = $utilityStrat->selectOrders(true);
 
 // $strat->buy(true);
-// $strat->sell(true);
+$strat->sell(true);
 
-$method                 = new GetMethods;
-$method->instrumentName = $instrumentName;
-
-$methodImpl = $method->createOrder($params);
-$request = SendRequest::sendReuquest($methodImpl, true);
+/**
+ * Create Order
+ */
+// $method                 = new GetMethods;
+// $method->instrumentName = $instrumentName;
+// $methodImpl = $method->createOrder($params);
+// $request = SendRequest::sendReuquest($methodImpl, true);
 
 TextFormatter::prettyPrint($strat->currentRSI, 'RSI', Colors::yellow);

@@ -4,14 +4,14 @@ include '../../DB/Queries/Queries.php';
 include '../../Variables/Currencies.php';
 
 abstract class RunQuery {
-    public static function create($query, $print = false) {
+    public static function create($query, $print = false, $print_full = false) {
         global $conn;
         $conn = Database::connect();
 
         $checkTable = "SELECT ID FROM $query->tableName";
         $result = mysqli_query($conn, $checkTable);
-        if ($print) TextFormatter::prettyPrint($query);
-        else TextFormatter::prettyPrint($query->sqlCommand);
+        if ($print_full)    TextFormatter::prettyPrint($query);
+        if ($print)         TextFormatter::prettyPrint($query->sqlCommand);
 
         if (empty($result)) {
             if ($conn->query($query->sqlCommand) === TRUE) {
@@ -36,17 +36,12 @@ abstract class RunQuery {
         $conn->close();
     }
 
+    public static function delete($query, $print = false) {
+        RunQuery::insert($query, $print);
+    }
+
     public static function drop($query, $print = false) {
-        global $conn;
-        $conn = Database::connect();
-
-        if ($print) TextFormatter::prettyPrint($query);
-        else TextFormatter::prettyPrint($query->sqlCommand);
-
-        if ($conn->query($query->sqlCommand) === FALSE) {
-            TextFormatter::prettyPrint('Error entering data: ' . $conn->error);
-        }
-        $conn->close();
+        RunQuery::insert($query, $print);
     }
 
     public static function select($query, $table = false, $print = false) {

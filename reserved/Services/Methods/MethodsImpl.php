@@ -80,11 +80,12 @@ class GetMethods {
     public function createOrder($params, $print = false) {
         $this->bodyRequest->addParams($params);
         $this->method->setMethod(POST, _private, createOrder, $this->bodyRequest);
-        TextFormatter::prettyPrint($this->bodyRequest->getParams(), '', Colors::yellow);
         $this->bodyRequest = new BodyRequest();
 
-        if ($print) TextFormatter::prettyPrint($this->method);
-        else TextFormatter::prettyPrint($this->method->toString());
+        if ($print) {
+            TextFormatter::prettyPrint($this->method);
+            TextFormatter::prettyPrint($this->bodyRequest->getParams(), '', Colors::yellow);
+        } else TextFormatter::prettyPrint($this->method->toString());
 
         return $this->method;
     }

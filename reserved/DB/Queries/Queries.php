@@ -71,6 +71,27 @@ class CreateTable {
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
+
+    public static function balance($test = null) {
+        global $constants;
+        $instance = new self();
+        $tableName = $constants['Tables']['balance'];
+        $tableName = $test ? 'TEST_' . $test . '_' . $tableName : $tableName;
+        $instance->query = Query::fill(
+            $tableName,
+            CREATE
+        );
+        $instance->query->addParam('ID',                    'INT',          10, 'UNSIGNED AUTO_INCREMENT PRIMARY KEY');
+        $instance->query->addParam('INSTRUMENT_NAME',       'VARCHAR',      20, 'NOT NULL');
+        $instance->query->addParam('FUNDS',                 'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('VALUE_PRICE',           'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('ASSET_QNT',             'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('PRICE',                 'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('ORDER_REASON',          'VARCHAR',      20, 'NOT NULL');
+        $instance->query->addParam('UPDATE_TIME',           'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
 }
 
 class InsertTable {
@@ -130,6 +151,25 @@ class InsertTable {
         $instance->query->addParam('FEE_CURRENCY',          'VARCHAR',      30, $orderList['fee_currency']);
         $instance->query->addParam('EXEC_INST',             'VARCHAR',      30, $orderList['exec_inst']);
         $instance->query->addParam('TIME_IN_FORCE',         'VARCHAR',      50, $orderList['time_in_force']);
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
+
+    public static function balance($balance, $test = null) {
+        global $constants;
+        $instance = new self();
+        $tableName = $constants['Tables']['balance'];
+        $tableName = $test ? 'TEST_' . $test . '_' . $tableName : $tableName;
+        $instance->query = Query::fill(
+            $tableName,
+            INSERT
+        );
+        $instance->query->addParam('INSTRUMENT_NAME',       'VARCHAR',      20, $balance['instrument_name']);
+        $instance->query->addParam('FUNDS',                 'FLOAT',        30, $balance['funds']);
+        $instance->query->addParam('VALUE_PRICE',           'FLOAT',        30, $balance['asset_qnt'] * $balance['price']);
+        $instance->query->addParam('ASSET_QNT',             'FLOAT',        30, $balance['asset_qnt']);
+        $instance->query->addParam('PRICE',                 'FLOAT',        30, $balance['price']);
+        $instance->query->addParam('ORDER_REASON',          'VARCHAR',      20, $balance['order_reason']);
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -216,6 +256,66 @@ class SelectFrom {
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
+
+    public static function balance($test = null) {
+        global $constants;
+        $instance = new self();
+        $tableName = $constants['Tables']['balance'];
+        $tableName = $test ? 'TEST_' . $test . '_' . $tableName : $tableName;
+        $instance->query = Query::fill(
+            $tableName,
+            SELECT
+        );
+        $instance->query->addParam('ID');
+        $instance->query->addParam('INSTRUMENT_NAME');
+        $instance->query->addParam('FUNDS');
+        $instance->query->addParam('VALUE_PRICE');
+        $instance->query->addParam('ASSET_QNT');
+        $instance->query->addParam('PRICE');
+        $instance->query->addParam('ORDER_REASON');
+        $instance->query->addParam('UPDATE_TIME');
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
+
+    public static function balanceForCurrency($instrumentName, $test = null) {
+        global $constants;
+        $instance = new self();
+        $tableName = $constants['Tables']['balance'];
+        $tableName = $test ? 'TEST_' . $test . '_' . $tableName : $tableName;
+        $instance->query = Query::fill(
+            $tableName,
+            SELECT
+        );
+        // Columns to show
+        $instance->query->addParam('ID');
+        $instance->query->addParam('INSTRUMENT_NAME');
+        $instance->query->addParam('FUNDS');
+        $instance->query->addParam('VALUE_PRICE');
+        $instance->query->addParam('ASSET_QNT');
+        $instance->query->addParam('PRICE');
+        $instance->query->addParam('UPDATE_TIME');
+        // Where conditions
+        $instance->query->addWhereCondition('INSTRUMENT_NAME', equal, $instrumentName);
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
+}
+
+class DeleteFrom {
+    public static function orders($order_id, $active = true, $test = null) {
+        global $constants;
+        $instance = new self();
+        $tableName = $active ? $constants['Tables']['orders'] . '_ACTIVE' : $constants['Tables']['orders'] . '_HISTORY';
+        $tableName = $test ? 'TEST_' . $test . '_' . $tableName : $tableName;
+        $instance->query = Query::fill(
+            $tableName,
+            DELETE
+        );
+        $instance->query->addWhereCondition('ID', equal, $order_id);
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
 }
 
 class DropTable {
@@ -223,6 +323,19 @@ class DropTable {
         global $constants;
         $instance = new self();
         $tableName = $active ? $constants['Tables']['orders'] . '_ACTIVE' : $constants['Tables']['orders'] . '_HISTORY';
+        $tableName = $test ? 'TEST_' . $test . '_' . $tableName : $tableName;
+        $instance->query = Query::fill(
+            $tableName,
+            DROP
+        );
+        $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
+        return $instance->query;
+    }
+
+    public static function balance($test = null) {
+        global $constants;
+        $instance = new self();
+        $tableName = $constants['Tables']['balance'];
         $tableName = $test ? 'TEST_' . $test . '_' . $tableName : $tableName;
         $instance->query = Query::fill(
             $tableName,

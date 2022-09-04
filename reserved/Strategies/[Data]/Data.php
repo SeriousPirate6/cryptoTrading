@@ -10,6 +10,7 @@ $params = [
 ];
 
 define('orderList', ([
+    "id"                    => 1,
     "status"                => "TEST",
     "side"                  => "SELL",
     "price"                 => 22000,
@@ -29,5 +30,13 @@ define('orderList', ([
     "time_in_force"         => "GOOD_TILL_CANCEL",
 ]));
 
-$orderList = get_defined_constants(true);
-$orderList = $orderList['user'];
+define('balance', ([
+    "instrument_name"       => $instrumentName,
+    "funds"                 => 100,
+    "asset_qnt"             => 0.5,
+    "price"                 => 22000,
+    "order_reason"          => "INITIALIZATION"
+]));
+
+$paramsData = get_defined_constants(true);
+$paramsData = $paramsData['user'];

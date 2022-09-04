@@ -1,16 +1,18 @@
 <?php
 define('Tables', ([
-    'currencyValue' => 'CURRENCY_VALUE',
+    'balance'       => 'BALANCE',
     'currencyData'  => 'CURRENCY_DATA',
-    'testStrategy'  => 'TEST_STRATEGY',
+    'currencyValue' => 'CURRENCY_VALUE',
     'orders'        => 'ORDERS',
+    'testStrategy'  => 'TEST_STRATEGY',
 ]));
 
 // Types
 const CREATE = 'CREATE';
+const DELETE = 'DELETE';
+const DROP   = 'DROP';
 const INSERT = 'INSERT';
 const SELECT = 'SELECT';
-const DROP   = 'DROP';
 
 //Operators
 const lessThan          = '<';

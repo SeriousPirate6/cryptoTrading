@@ -31,7 +31,7 @@ class Query {
     public function addWhereCondition($name, $operator, $value) {
         if ($this->whereConditions == null) $this->whereConditions = array();
         if (is_array($this->whereConditions)) {
-            if ($this->type == SELECT) array_push($this->whereConditions, WhereCondition::fill($name, $operator, $value));
+            if ($this->type == SELECT || $this->type == DELETE) array_push($this->whereConditions, WhereCondition::fill($name, $operator, '"' . $value . '"'));
         }
     }
 
