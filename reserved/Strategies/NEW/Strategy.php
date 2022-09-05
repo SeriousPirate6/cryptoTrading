@@ -164,11 +164,16 @@ class Strategy {
         if ($rsi70 || $priceUp) {
             if ($print) TextFormatter::prettyPrint($lastClose, $rsi70 ? ">70 LAST CLOSE: " : "PRICE UP LAST CLOSE: ", Colors::purple);
 
-            $sell = $this->utilityStrat->getFirstBoughtQnt();
-            TextFormatter::prettyPrint($sell);
+            $sell = $rsi70 ?
+                UtilityStrat::getPercentageOf(20, $this->utilityStrat->getFirstBoughtQnt()) :
+                UtilityStrat::getPercentageOf(10, $this->utilityStrat->getFirstBoughtQnt());
+            TextFormatter::prettyPrint($sell, "SELL_VALUE", Colors::aqua);
+
             if ($this->utilityStrat->isAssetQntEnough($sell)) {
                 $this->liquidity = $this->liquidity + $sell * $lastClose;
                 $this->quantity = $this->quantity - $sell;
+                TextFormatter::prettyPrint($this->liquidity, 'LIQ', Colors::violet);
+                TextFormatter::prettyPrint($this->quantity, 'QNT', Colors::purple);
                 // update the balance
                 $this->utilityStrat->insertBalance(
                     UtilityStrat::setBalanceParams(
