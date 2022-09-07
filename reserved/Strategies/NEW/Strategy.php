@@ -7,7 +7,6 @@ include '../[Utility]/UtilityFuncs.php';
 include '../[Data]/Data.php';
 
 class Strategy {
-    public $price;
     public $closes;
     public $quantity;
     public $lastClose;
@@ -17,20 +16,18 @@ class Strategy {
     public $utilityStrat;
     public $instrumentName;
 
-    public function __construct($liquidity, $price, $quantity, $instrumentName) {
+    public function __construct($liquidity, $quantity, $instrumentName) {
         $this->utilityStrat = new UtilityStrat(basename(__DIR__), $instrumentName);
         $this->instrumentName = $instrumentName;
         /**
          * Checking if table and datas are already present
          */
         if (!$this->utilityStrat->selectBalance()) {
-            $this->price        = $price;
             $this->quantity     = $quantity;
             $this->liquidity    = $liquidity;
         } else {
             $this->liquidity    = $this->utilityStrat->selectLastBalance()['funds'];
             $this->quantity     = $this->utilityStrat->selectLastBalance()['asset_qnt'];
-            $this->price        = $this->utilityStrat->selectLastBalance()['value_price'];
         }
 
         /**
@@ -77,14 +74,6 @@ class Strategy {
         }
     }
 
-    public function setPrice($price) {
-        if (!$this->utilityStrat->selectLastBalance()) {
-            $this->price = $price;
-        } else {
-            $this->price = $this->utilityStrat->selectLastBalance()['value_price'];
-        }
-    }
-
     /**
      * Update DB
      */
@@ -93,7 +82,7 @@ class Strategy {
             $this->instrumentName,
             $this->liquidity,
             $this->quantity,
-            $this->price,
+            $this->lastClose,
             "INITIALIZATION"
         );
         if (!$this->utilityStrat->selectBalance()) {
@@ -119,8 +108,8 @@ class Strategy {
             $tot_funds = $this->liquidity + $this->price * $this->quantity;
 
             $buy = $rsi30 ?
-                $this->utilityStrat->getPercentageOf(10, $tot_funds) :
-                $this->utilityStrat->getPercentageOf(5, $tot_funds);
+                $this->utilityStrat->getPercentageOf(5, $tot_funds) :
+                $this->utilityStrat->getPercentageOf(3, $tot_funds);
 
             if ($this->utilityStrat->isLiQuidityEnough($buy)) {
                 $this->liquidity = $this->liquidity - $buy;
@@ -155,25 +144,24 @@ class Strategy {
     public function sell($print = false) {
         if ($print) TextFormatter::prettyPrint("SELL: ", '', Colors::purple);
         $lastPrice = $this->utilityStrat->getLastPrice();
+        TextFormatter::prettyPrint($lastPrice, 'LAST PRICE', Colors::light_blue);
         $lastClose = end($this->closes);
 
         // cases
         $rsi70      = $this->utilityStrat->rsiBelow($this->currentRSI, 30);
-        $priceUp    = $this->utilityStrat->calcPercentage($lastPrice, $lastClose) > -0.5;
+        $priceUp    = $this->utilityStrat->calcPercentage($lastPrice, $lastClose) > 0.5;
 
         if ($rsi70 || $priceUp) {
             if ($print) TextFormatter::prettyPrint($lastClose, $rsi70 ? ">70 LAST CLOSE: " : "PRICE UP LAST CLOSE: ", Colors::purple);
 
             $sell = $rsi70 ?
-                UtilityStrat::getPercentageOf(20, $this->utilityStrat->getFirstBoughtQnt()) :
-                UtilityStrat::getPercentageOf(10, $this->utilityStrat->getFirstBoughtQnt());
+                UtilityStrat::getPercentageOf(5, $this->utilityStrat->getFirstBoughtQnt()) :
+                UtilityStrat::getPercentageOf(3, $this->utilityStrat->getFirstBoughtQnt());
             TextFormatter::prettyPrint($sell, "SELL_VALUE", Colors::aqua);
 
             if ($this->utilityStrat->isAssetQntEnough($sell)) {
                 $this->liquidity = $this->liquidity + $sell * $lastClose;
                 $this->quantity = $this->quantity - $sell;
-                TextFormatter::prettyPrint($this->liquidity, 'LIQ', Colors::violet);
-                TextFormatter::prettyPrint($this->quantity, 'QNT', Colors::purple);
                 // update the balance
                 $this->utilityStrat->insertBalance(
                     UtilityStrat::setBalanceParams(
@@ -203,7 +191,7 @@ class Strategy {
 
 // initializing params
 $liquidity      = 100;
-$price          = 100;
+$value_price    = 100;
 $instrumentName = Currencies::ETH_USDT;
 $utilityStrat   = new UtilityStrat(basename(__DIR__), $instrumentName);
 
@@ -213,8 +201,8 @@ $utilityStrat->createOrders(false);
 $utilityStrat->createBalance();
 
 // Initializing the strategy
-$strat = new Strategy($liquidity, $price, 0, $instrumentName);
-$quantity = $price / $strat->lastClose;
+$strat = new Strategy($liquidity, 0, $instrumentName);
+$quantity = $value_price / $strat->lastClose;
 $strat->setQuantity($quantity);
 $strat->updateDB();
 
@@ -223,7 +211,7 @@ TextFormatter::prettyPrint($strat->quantity, 'QNT', Colors::purple);
 $datas = $utilityStrat->selectLastOrder();
 $datas = $utilityStrat->selectOrders(true);
 
-// $strat->buy(true);
+$strat->buy(true);
 $strat->sell(true);
 
 /**

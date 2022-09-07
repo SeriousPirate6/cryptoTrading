@@ -88,6 +88,7 @@ class CreateTable {
         $instance->query->addParam('ASSET_QNT',             'FLOAT',        30, 'NOT NULL');
         $instance->query->addParam('PRICE',                 'FLOAT',        30, 'NOT NULL');
         $instance->query->addParam('ORDER_REASON',          'VARCHAR',      20, 'NOT NULL');
+        $instance->query->addParam('TOT_QNT',               'FLOAT',        30, 'NOT NULL');
         $instance->query->addParam('UPDATE_TIME',           'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
@@ -170,6 +171,7 @@ class InsertTable {
         $instance->query->addParam('ASSET_QNT',             'FLOAT',        30, $balance['asset_qnt']);
         $instance->query->addParam('PRICE',                 'FLOAT',        30, $balance['price']);
         $instance->query->addParam('ORDER_REASON',          'VARCHAR',      20, $balance['order_reason']);
+        $instance->query->addParam('TOT_QNT',               'FLOAT',        30, $balance['funds'] + $balance['asset_qnt'] * $balance['price']);
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -273,6 +275,7 @@ class SelectFrom {
         $instance->query->addParam('ASSET_QNT');
         $instance->query->addParam('PRICE');
         $instance->query->addParam('ORDER_REASON');
+        $instance->query->addParam('TOT_QNT');
         $instance->query->addParam('UPDATE_TIME');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;

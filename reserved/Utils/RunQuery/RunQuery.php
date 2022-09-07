@@ -15,7 +15,7 @@ abstract class RunQuery {
 
         if (empty($result)) {
             if ($conn->query($query->sqlCommand) === TRUE) {
-                TextFormatter::prettyPrint('Table created successfully');
+                TextFormatter::prettyPrint('Table ' . $query->tableName . ' created successfully');
             } else {
                 TextFormatter::prettyPrint('Error creating table: ' . $conn->error);
             }
