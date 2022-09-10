@@ -8,10 +8,12 @@ include '../[Data]/Data.php';
 
 class Strategy {
     public $closes;
+    public $profit;
     public $quantity;
     public $lastClose;
     public $liquidity;
     public $currentRSI;
+    public $high_profit;
     public $candlesticks;
     public $utilityStrat;
     public $instrumentName;
@@ -74,6 +76,11 @@ class Strategy {
         }
     }
 
+    public function setProfits($profit, $high_profit) {
+        $this->profit = $profit;
+        $this->high_profit = $high_profit;
+    }
+
     /**
      * Update DB
      */
@@ -83,6 +90,7 @@ class Strategy {
             $this->liquidity,
             $this->quantity,
             $this->lastClose,
+            $this->lastClose, // at the beginning we pass the last close as the lastBuy, because we don't have one :)
             "INITIALIZATION"
         );
         if (!$this->utilityStrat->selectBalance()) {
@@ -95,21 +103,20 @@ class Strategy {
      */
     public function buy($print = false) {
         if ($print) TextFormatter::prettyPrint("BUY: ", '', Colors::orange);
-        $lastPrice = $this->utilityStrat->getLastPrice();
+        $lastBuy = $this->utilityStrat->getLastPrice();
         $lastClose = end($this->closes);
 
         // cases
         $rsi30      = $this->utilityStrat->rsiBelow($this->currentRSI, 30);
-        $priceDown  = $this->utilityStrat->calcPercentage($lastPrice, $lastClose) < -0.5;
 
-        if ($rsi30 || $priceDown) {
+        if ($rsi30) {
             if ($print) TextFormatter::prettyPrint($lastClose, $rsi30 ? "<30 LAST CLOSE: " : "PRICE DOWN LAST CLOSE: ", Colors::orange);
 
             $tot_funds = $this->liquidity + $this->price * $this->quantity;
 
             $buy = $rsi30 ?
-                $this->utilityStrat->getPercentageOf(5, $tot_funds) :
-                $this->utilityStrat->getPercentageOf(3, $tot_funds);
+                $this->utilityStrat->getPercentageOf($this->high_profit, $tot_funds) :
+                $this->utilityStrat->getPercentageOf($this->profit, $tot_funds);
 
             if ($this->utilityStrat->isLiQuidityEnough($buy)) {
                 $this->liquidity = $this->liquidity - $buy;
@@ -121,6 +128,7 @@ class Strategy {
                         $this->liquidity,
                         $this->quantity,
                         $lastClose,
+                        $lastBuy,
                         $rsi30 ? "BUY 30" : "PRICE_DOWN"
                     )
                 );
@@ -143,20 +151,19 @@ class Strategy {
      */
     public function sell($print = false) {
         if ($print) TextFormatter::prettyPrint("SELL: ", '', Colors::purple);
-        $lastPrice = $this->utilityStrat->getLastPrice();
-        TextFormatter::prettyPrint($lastPrice, 'LAST PRICE', Colors::light_blue);
+        $lastBuy = $this->utilityStrat->getLastPrice();
+        TextFormatter::prettyPrint($lastBuy, 'LAST PRICE', Colors::light_blue);
         $lastClose = end($this->closes);
 
         // cases
-        $rsi70      = $this->utilityStrat->rsiBelow($this->currentRSI, 30);
-        $priceUp    = $this->utilityStrat->calcPercentage($lastPrice, $lastClose) > 0.5;
+        $rsi70      = $this->utilityStrat->rsiAbove($this->currentRSI, 70);
 
-        if ($rsi70 || $priceUp) {
+        if ($rsi70) {
             if ($print) TextFormatter::prettyPrint($lastClose, $rsi70 ? ">70 LAST CLOSE: " : "PRICE UP LAST CLOSE: ", Colors::purple);
 
             $sell = $rsi70 ?
-                UtilityStrat::getPercentageOf(5, $this->utilityStrat->getFirstBoughtQnt()) :
-                UtilityStrat::getPercentageOf(3, $this->utilityStrat->getFirstBoughtQnt());
+                UtilityStrat::getPercentageOf($this->high_profit, $this->utilityStrat->getFirstBoughtQnt()) :
+                UtilityStrat::getPercentageOf($this->profit, $this->utilityStrat->getFirstBoughtQnt());
             TextFormatter::prettyPrint($sell, "SELL_VALUE", Colors::aqua);
 
             if ($this->utilityStrat->isAssetQntEnough($sell)) {
@@ -169,6 +176,7 @@ class Strategy {
                         $this->liquidity,
                         $this->quantity,
                         $lastClose,
+                        $lastBuy,
                         $rsi70 ? "SELL 70" : "PRICE_UP"
                     )
                 );
@@ -204,6 +212,7 @@ $utilityStrat->createBalance();
 $strat = new Strategy($liquidity, 0, $instrumentName);
 $quantity = $value_price / $strat->lastClose;
 $strat->setQuantity($quantity);
+$strat->setProfits(10, 15);
 $strat->updateDB();
 
 TextFormatter::prettyPrint($strat->quantity, 'QNT', Colors::purple);

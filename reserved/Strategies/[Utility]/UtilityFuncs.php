@@ -24,12 +24,20 @@ class UtilityStrat {
         return $paramsData['orderList'];
     }
 
-    public static function setBalanceParams($instrumentName, $funds, $asset_qnt, $price, $order_reason) {
+    public static function setBalanceParams(
+        $instrumentName,
+        $funds,
+        $asset_qnt,
+        $price,
+        $last_buy,
+        $order_reason
+    ) {
         global $paramsData;
         $paramsData['balance']['instrument_name']    = $instrumentName;
         $paramsData['balance']['funds']              = $funds;
         $paramsData['balance']['asset_qnt']          = $asset_qnt;
         $paramsData['balance']['price']              = $price;
+        $paramsData['balance']['last_buy']           = $last_buy;
         $paramsData['balance']['order_reason']       = $order_reason;
         return $paramsData['balance'];
     }
@@ -156,6 +164,30 @@ class UtilityStrat {
     }
 
     /**
+     * Trend functions
+     * True  == Buy
+     * False == Sell
+     */
+    public static function trend($last, $current, $alreadyBreak) {
+        // Signal for buying
+        if (UtilityStrat::calcPercentage($last, $current) < -0.4) {
+            return true;
+        }
+        // Signal for selling
+        if (UtilityStrat::calcPercentage($last, $current) > 0.4) {
+            return false;
+        }
+
+        if ($alreadyBreak) {
+            if (UtilityStrat::isPriceUpping($last, $current)) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
+    /**
      * Price functions
      */
     public function isLiquidityEnough($qnt) {
@@ -170,11 +202,17 @@ class UtilityStrat {
         return false;
     }
 
+    public static function isPriceUpping($price1, $price2) {
+        // percentage below 0 == price is upping
+        if (UtilityStrat::calcPercentage($price1, $price2) > 0) return true;
+        return false;
+    }
+
     /**
      * Percentage functions
      */
     public static function calcPercentage($price1, $price2) {
-        $ratio = 100 - $price2 / $price1 * 100;
+        $ratio = 100 - $price1 / $price2 * 100;
         return $ratio;
     }
 

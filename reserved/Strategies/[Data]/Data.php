@@ -35,6 +35,7 @@ define('balance', ([
     "funds"                 => 100,
     "asset_qnt"             => 0.5,
     "price"                 => 22000,
+    "last_buy"              => 21000,
     "order_reason"          => "INITIALIZATION"
 ]));
 
