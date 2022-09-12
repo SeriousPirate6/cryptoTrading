@@ -7,6 +7,7 @@ include '../[Utility]/UtilityFuncs.php';
 include '../[Data]/Data.php';
 
 class Strategy {
+    public $emas;
     public $closes;
     public $profit;
     public $quantity;
@@ -19,6 +20,7 @@ class Strategy {
     public $instrumentName;
 
     public function __construct($liquidity, $quantity, $instrumentName) {
+        $this->emas = array();
         $this->utilityStrat = new UtilityStrat(basename(__DIR__), $instrumentName);
         $this->instrumentName = $instrumentName;
         /**
@@ -36,7 +38,7 @@ class Strategy {
          * Method setup, API call and data extraction
          */
         $method     = new GetMethods;
-        $methodImpl = $method->getCandlestick($instrumentName, '1m', 60);
+        $methodImpl = $method->getCandlestick($instrumentName, '1m', 100);
         $request = SendRequest::sendReuquest($methodImpl);
         $this->candlesticks = ExtractFromRequest::candlesticksCollapsableTable($request);
         $this->closes = ExtractFromRequest::closesCollapsableTable($request);
@@ -50,6 +52,16 @@ class Strategy {
          * Current RSI
          */
         $this->currentRSI = TradingView::rsi($this->closes, 20);
+
+        /**
+         * EMA 50
+         */
+        $this->emas[0] = TradingView::ema($this->closes, 50);
+
+        /**
+         * EMA 100
+         */
+        $this->emas[1] = TradingView::ema($this->closes, 100);
 
         /**
          * Last closed candlestick
@@ -212,10 +224,13 @@ $utilityStrat->createBalance();
 $strat = new Strategy($liquidity, 0, $instrumentName);
 $quantity = $value_price / $strat->lastClose;
 $strat->setQuantity($quantity);
-$strat->setProfits(10, 15);
+$strat->setProfits(10, 20);
 $strat->updateDB();
 
 TextFormatter::prettyPrint($strat->quantity, 'QNT', Colors::purple);
+
+TextFormatter::prettyPrint($strat->emas, 'EMAs', Colors::aqua);
+TextFormatter::prettyPrint($utilityStrat->getFirstPrice(), 'FIRST', Colors::orange);
 
 $datas = $utilityStrat->selectLastOrder();
 $datas = $utilityStrat->selectOrders(true);

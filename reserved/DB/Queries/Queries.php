@@ -90,6 +90,7 @@ class CreateTable {
         $instance->query->addParam('LAST_BUY',              'FLOAT',        30, 'NOT NULL');
         $instance->query->addParam('ORDER_REASON',          'VARCHAR',      20, 'NOT NULL');
         $instance->query->addParam('TOT_QNT',               'FLOAT',        30, 'NOT NULL');
+        $instance->query->addParam('PROFIT',                'FLOAT',        30, 'NOT NULL');
         $instance->query->addParam('UPDATE_TIME',           'TIMESTAMP',    0,  'DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
@@ -157,7 +158,7 @@ class InsertTable {
         return $instance->query;
     }
 
-    public static function balance($balance, $test = null) {
+    public static function balance($balance, $test = null, $firstTotFunds, $firstBuy) {
         global $constants;
         $instance = new self();
         $tableName = $constants['Tables']['balance'];
@@ -174,6 +175,7 @@ class InsertTable {
         $instance->query->addParam('LAST_BUY',              'FLOAT',        30, $balance['last_buy']);
         $instance->query->addParam('ORDER_REASON',          'VARCHAR',      20, $balance['order_reason']);
         $instance->query->addParam('TOT_QNT',               'FLOAT',        30, $balance['funds'] + $balance['asset_qnt'] * $balance['price']);
+        $instance->query->addParam('PROFIT',                'FLOAT',        30, $firstTotFunds ? UtilityStrat::calcPercentage($firstTotFunds, $firstBuy * $balance['asset_qnt']) : 0);
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -279,6 +281,7 @@ class SelectFrom {
         $instance->query->addParam('LAST_BUY');
         $instance->query->addParam('ORDER_REASON');
         $instance->query->addParam('TOT_QNT');
+        $instance->query->addParam('PROFIT');
         $instance->query->addParam('UPDATE_TIME');
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;

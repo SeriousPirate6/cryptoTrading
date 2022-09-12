@@ -62,7 +62,11 @@ class UtilityStrat {
     }
 
     public function insertBalance($params) {
-        $balance = InsertTable::balance($params, $this->tableName);
+        $instance = new self($this->tableName, $this->instrumentName);
+        $firstFunds = $instance->getFirstFunds();
+        $firstPrice = $instance->getFirstPrice();
+        $instance->getFirstFunds();
+        $balance = InsertTable::balance($params, $this->tableName, $firstFunds, $firstPrice);
         RunQuery::insert($balance);
     }
 
@@ -122,6 +126,16 @@ class UtilityStrat {
         return $lastRow;
     }
 
+    public function getFirstFunds($table = false) {
+        $selectLastBalance = SelectFrom::balanceForCurrency(
+            $this->instrumentName,
+            $this->tableName
+        );
+        $rows = RunQuery::select($selectLastBalance, $table);
+        $lastRow = $rows ? $rows[0]['tot_qnt'] : null;
+        return $lastRow;
+    }
+
     public function getFirstBoughtQnt($table = false) {
         $selectLastBalance = SelectFrom::balanceForCurrency(
             $this->instrumentName,
@@ -129,6 +143,19 @@ class UtilityStrat {
         );
         $rows = RunQuery::select($selectLastBalance, $table);
         $lastPrice = $rows ? $rows[0]['asset_qnt'] : null;
+        return $lastPrice;
+    }
+
+    /**
+     * return first buyed price
+     */
+    public function getFirstPrice($table = false) {
+        $selectLastBalance = SelectFrom::balanceForCurrency(
+            $this->instrumentName,
+            $this->tableName
+        );
+        $rows = RunQuery::select($selectLastBalance, $table);
+        $lastPrice = $rows ? $rows[0]['price'] : null;
         return $lastPrice;
     }
 
