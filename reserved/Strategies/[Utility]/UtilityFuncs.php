@@ -65,7 +65,6 @@ class UtilityStrat {
         $instance = new self($this->tableName, $this->instrumentName);
         $firstFunds = $instance->getFirstFunds();
         $firstPrice = $instance->getFirstPrice();
-        $instance->getFirstFunds();
         $balance = InsertTable::balance($params, $this->tableName, $firstFunds, $firstPrice);
         RunQuery::insert($balance);
     }

@@ -167,6 +167,8 @@ class InsertTable {
             $tableName,
             INSERT
         );
+        $noTradTot = $firstTotFunds / $firstBuy * $balance['price'];
+        $totQnt = $balance['funds'] + $balance['asset_qnt'] * $balance['price'];
         $instance->query->addParam('INSTRUMENT_NAME',       'VARCHAR',      20, $balance['instrument_name']);
         $instance->query->addParam('FUNDS',                 'FLOAT',        30, $balance['funds']);
         $instance->query->addParam('VALUE_PRICE',           'FLOAT',        30, $balance['asset_qnt'] * $balance['price']);
@@ -174,8 +176,8 @@ class InsertTable {
         $instance->query->addParam('PRICE',                 'FLOAT',        30, $balance['price']);
         $instance->query->addParam('LAST_BUY',              'FLOAT',        30, $balance['last_buy']);
         $instance->query->addParam('ORDER_REASON',          'VARCHAR',      20, $balance['order_reason']);
-        $instance->query->addParam('TOT_QNT',               'FLOAT',        30, $balance['funds'] + $balance['asset_qnt'] * $balance['price']);
-        $instance->query->addParam('PROFIT',                'FLOAT',        30, $firstTotFunds ? UtilityStrat::calcPercentage($firstTotFunds, $firstBuy * $balance['asset_qnt']) : 0);
+        $instance->query->addParam('TOT_QNT',               'FLOAT',        30, $totQnt);
+        $instance->query->addParam('PROFIT',                'FLOAT',        30, $firstTotFunds ? UtilityStrat::calcPercentage($noTradTot, $totQnt) : 0);
         $instance->query->sqlCommand = QueryBuilder::getSQL($instance->query);
         return $instance->query;
     }
@@ -302,6 +304,7 @@ class SelectFrom {
         $instance->query->addParam('FUNDS');
         $instance->query->addParam('VALUE_PRICE');
         $instance->query->addParam('ASSET_QNT');
+        $instance->query->addParam('TOT_QNT');
         $instance->query->addParam('PRICE');
         $instance->query->addParam('UPDATE_TIME');
         // Where conditions

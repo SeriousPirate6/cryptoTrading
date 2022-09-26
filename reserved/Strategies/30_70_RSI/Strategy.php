@@ -38,9 +38,9 @@ class Strategy {
          * Method setup, API call and data extraction
          */
         $method     = new GetMethods;
-        $methodImpl = $method->getCandlestick($instrumentName, '1m', 100);
+        $methodImpl = $method->getCandlestick($instrumentName, '1m', 60);
         $request = SendRequest::sendReuquest($methodImpl);
-        $this->candlesticks = ExtractFromRequest::candlesticksCollapsableTable($request);
+        // $this->candlesticks = ExtractFromRequest::candlesticksCollapsableTable($request);
         $this->closes = ExtractFromRequest::closesCollapsableTable($request);
 
         /**
@@ -224,7 +224,7 @@ $utilityStrat->createBalance();
 $strat = new Strategy($liquidity, 0, $instrumentName);
 $quantity = $value_price / $strat->lastClose;
 $strat->setQuantity($quantity);
-$strat->setProfits(10, 20);
+$strat->setProfits(10, 10);
 $strat->updateDB();
 
 TextFormatter::prettyPrint($strat->quantity, 'QNT', Colors::purple);
@@ -233,7 +233,7 @@ TextFormatter::prettyPrint($strat->emas, 'EMAs', Colors::aqua);
 TextFormatter::prettyPrint($utilityStrat->getFirstPrice(), 'FIRST', Colors::orange);
 
 $datas = $utilityStrat->selectLastOrder();
-$datas = $utilityStrat->selectOrders(true);
+$datas = $utilityStrat->selectOrders();
 
 $strat->buy(true);
 $strat->sell(true);
